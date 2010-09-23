@@ -9,6 +9,12 @@ import httplib2
 class ZencoderError(Exception):
     pass
 
+class HTTPBackend(object):
+    """
+    Abstracts out an HTTP backend, but defaults to httplib2
+    """
+    pass
+
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
     def __init__(self, api_key=None, as_xml=False):
