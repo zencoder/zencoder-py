@@ -13,7 +13,13 @@ class HTTPBackend(object):
     """
     Abstracts out an HTTP backend, but defaults to httplib2
     """
-    pass
+    def __init__(self):
+        """
+        Creates an HTTPBackend object, which abstracts out some of the
+        library specific HTTP stuff.
+        """
+        self.base_url = 'https://app.zencoder.com/api/'
+        self.http = httplib2.Http()
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
