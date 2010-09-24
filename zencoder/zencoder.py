@@ -12,14 +12,49 @@ class ZencoderError(Exception):
 class HTTPBackend(object):
     """
     Abstracts out an HTTP backend, but defaults to httplib2
+
+    @FIXME: Build in support for supplying arbitrary backends
     """
-    def __init__(self):
+    def __init__(self, as_xml=False):
         """
         Creates an HTTPBackend object, which abstracts out some of the
         library specific HTTP stuff.
         """
         self.base_url = 'https://app.zencoder.com/api/'
         self.http = httplib2.Http()
+        self.as_xml = as_xml
+
+        if self.as_xml:
+            self.headers = {}
+        else:
+            self.headers = {'Content-Type': 'application/json',
+                            'Accepts': 'application/json'}
+
+    def decode(self, raw_body):
+        """
+        Returns the raw_body as json (the default) or XML
+        """
+        if not self.as_xml:
+            return json.loads(raw_body)
+
+    def post(self, url, body=None):
+        """
+        Execute a HTTP POST request for the given URL
+        """
+        response, content = self.http.request(url, method="POST",
+                                              body=body,
+                                              headers=self.headers)
+
+        return self.process(response, content)
+
+    def process(self, http_response, content):
+        """
+        Returns HTTP backend agnostic Response data
+        """
+        code = http_response.status
+        body = self.decode(content)
+        response = Response(code, body, content, http_response)
+        return response
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
