@@ -36,10 +36,11 @@ class Zencoder(object):
         else:
             self.api_key = api_key
 
-        # no caching set up
-        self.http = httplib2.Http()
-
         self.as_xml = as_xml
+        self.job = Job(self.api_key, self.as_xml)
+        self.account = Account(self.api_key, self.as_xml)
+        self.notification = Notification(self.api_key, self.as_xml)
+        self.output = Output(self.api_key, self.as_xml)
 
     def get_jobs(self):
         url = self.base_url + 'jobs'
