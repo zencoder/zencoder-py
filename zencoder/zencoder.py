@@ -21,7 +21,7 @@ class Zencoder(object):
         """
         Initializes Zencoder. You must have a valid API_KEY.
 
-        You can pass in the api_key as an argument, or set 
+        You can pass in the api_key as an argument, or set
         'ZENCODER_API_KEY' as an environment variable, and it will use
         that, if api_key is unspecified.
 
