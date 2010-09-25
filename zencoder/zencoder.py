@@ -96,52 +96,43 @@ class Zencoder(object):
         self.notification = Notification(self.api_key, self.as_xml)
         self.output = Output(self.api_key, self.as_xml)
 
-    def get_jobs(self):
-        url = self.base_url + 'jobs'
-        url = '%s?api_key=%s' % (url, self.api_key)
-        #data = urllib.urlencode({'api_key': self.api_key})
-
-        request = urllib2.Request(url)
-
-        response = urllib2.urlopen(request).read()
-        if not self.as_xml:
-            response = json.loads(response)
-
-        return [Job(x) for x in response]
-
-    def create_job(self, input):
-        """ creates a zencoder job """
-        url = self.base_url + 'jobs'
-        data = json.dumps({"api_key":self.api_key, "input": input})
-
-        headers = {'Content-Type': 'application/json',
-                   'Accept': 'application/json'}
-        req = self.http.request(url, method="POST", body=data,
-                              headers=headers)
-
-        return json.loads(req[-1])
-
 class Response(object):
     """ Response object """
-    pass
+    def __init__(self, code, body, raw_body, raw_response):
+        self.code = code
+        self.body = body
+        self.raw_body = raw_body
+        self.raw_response = raw_response
 
 class Output(object):
     """ Output object """
     pass
 
-class Job(object):
-    """ Job object """
-    def __init__(self, api_key):
+class Job(HTTPBackend):
+    """
+    Contains all the methods that can be performed relating to Jobs with
+    the Zencoder API
+    """
+    def __init__(self, api_key, as_xml=False):
         """
         Initialize a job object
         """
-        pass
+        super(Job, self).__init__()
+        self.api_key = api_key
+        self.as_xml = as_xml
+        self.base_url = self.base_url + 'jobs'
 
     def create(self, input, outputs=None, options=None):
         """
         Create a job
+
         """
-        pass
+        data = {"api_key": self.api_key, "input": input}
+        if outputs:
+            data['outputs'] = outputs
+        if options:
+            data['options'] = options
+        return self.post(self.base_url, body=self.encode(data))
 
     def list(self, page, per_page):
         """
