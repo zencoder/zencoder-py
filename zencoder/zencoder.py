@@ -33,6 +33,16 @@ class HTTPBackend(object):
             self.headers = {'Content-Type': 'application/json',
                             'Accepts': 'application/json'}
 
+    def encode(self, data):
+        """
+        Encodes data as either JSON or XML, so that it can be passed onto
+        the Zencoder API
+        """
+        if not self.as_xml:
+            return json.dumps(data)
+        else:
+            raise NotImplementedError('Encoding as XML is not supported.')
+
     def decode(self, raw_body):
         """
         Returns the raw_body as json (the default) or XML
