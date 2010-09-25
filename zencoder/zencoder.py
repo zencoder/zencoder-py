@@ -21,11 +21,14 @@ class HTTPBackend(object):
         library specific HTTP stuff.
         """
         self.base_url = 'https://app.zencoder.com/api/'
+
+        #TODO investigate httplib2 caching and if it is necessary
         self.http = httplib2.Http()
         self.as_xml = as_xml
 
         if self.as_xml:
-            self.headers = {}
+            self.headers = {'Content-Type': 'application/xml',
+                            'Accepts': 'application/xml'}
         else:
             self.headers = {'Content-Type': 'application/json',
                             'Accepts': 'application/json'}
