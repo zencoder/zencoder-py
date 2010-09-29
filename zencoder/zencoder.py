@@ -16,16 +16,19 @@ class HTTPBackend(object):
 
     @FIXME: Build in support for supplying arbitrary backends
     """
-    def __init__(self, as_xml=False):
+    def __init__(self, api_key, as_xml=False, resource_name=None):
         """
         Creates an HTTPBackend object, which abstracts out some of the
         library specific HTTP stuff.
         """
         self.base_url = 'https://app.zencoder.com/api/'
+        if resource_name:
+            self.base_url = self.base_url + resource_name
 
         #TODO investigate httplib2 caching and if it is necessary
         self.http = httplib2.Http()
         self.as_xml = as_xml
+        self.api_key = api_key
 
         if self.as_xml:
             self.headers = {'Content-Type': 'application/xml',
@@ -107,8 +110,6 @@ class Zencoder(object):
         self.as_xml = as_xml
         self.job = Job(self.api_key, self.as_xml)
         self.account = Account(self.api_key, self.as_xml)
-        self.notification = Notification(self.api_key, self.as_xml)
-        self.output = Output(self.api_key, self.as_xml)
 
 class Response(object):
     """ Response object """
@@ -131,10 +132,7 @@ class Job(HTTPBackend):
         """
         Initialize a job object
         """
-        super(Job, self).__init__()
-        self.api_key = api_key
-        self.as_xml = as_xml
-        self.base_url = self.base_url + 'jobs'
+        super(Job, self).__init__(api_key, as_xml, 'jobs')
 
     def create(self, input, outputs=None, options=None):
         """
@@ -185,7 +183,11 @@ class Notification(object):
     """ Notification object """
     pass
 
-class Account(object):
+class Account(HTTPBackend):
     """ Account object """
-    pass
+    def __init__(self, api_key, as_xml=False):
+        """
+        Initializes an Account object
+        """
+        super(Account, self).__init__(api_key, as_xml, 'account')
 
