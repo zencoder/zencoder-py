@@ -52,7 +52,10 @@ class HTTPBackend(object):
         Returns the raw_body as json (the default) or XML
         """
         if not self.as_xml:
-            return json.loads(raw_body)
+            if not raw_body or raw_body == ' ':
+                return None
+            else:
+                return json.loads(raw_body)
 
     def post(self, url, body=None):
         """
@@ -190,4 +193,39 @@ class Account(HTTPBackend):
         Initializes an Account object
         """
         super(Account, self).__init__(api_key, as_xml, 'account')
+
+    def create(self, email, tos=True, options=None):
+        """
+        Creates an account with Zencoder.
+        """
+        data = {'email': email,
+                'terms_of_service': int(tos)}
+
+        if options:
+            data.update(options)
+
+        return self.post(self.base_url, body=self.encode(data))
+
+    def details(self):
+        """
+        Gets your account details
+        """
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url, params=urlencode(data))
+
+    def integration(self):
+        """
+        Puts your account into integration mode
+        """
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/integration',
+                        params=urlencode(data))
+
+    def live(self):
+        """
+        Puts your account into live mode
+        """
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/live',
+                        params=urlencode(data))
 
