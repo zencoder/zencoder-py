@@ -5,6 +5,7 @@ Main Zencoder module
 import os
 import json
 import httplib2
+from urllib import urlencode
 
 class ZencoderError(Exception):
     pass
@@ -52,12 +53,25 @@ class HTTPBackend(object):
 
     def post(self, url, body=None):
         """
-        Execute a HTTP POST request for the given URL
+        Executes an HTTP POST request for the given URL
         """
         response, content = self.http.request(url, method="POST",
                                               body=body,
                                               headers=self.headers)
 
+        return self.process(response, content)
+
+    def get(self, url, params=None):
+        """
+        Executes an HTTP GET request for the given URL
+
+        params should be a urllib.urlencoded string
+        """
+        if params:
+            url = '?'.join([url, params])
+
+        response, content = self.http.request(url, method="GET",
+                                              headers=self.headers)
         return self.process(response, content)
 
     def process(self, http_response, content):
@@ -134,11 +148,14 @@ class Job(HTTPBackend):
             data['options'] = options
         return self.post(self.base_url, body=self.encode(data))
 
-    def list(self, page, per_page):
+    def list(self, page=1, per_page=50):
         """
         List some jobs
         """
-        pass
+        data = {"api_key": self.api_key,
+                "page": page,
+                "per_page": per_page}
+        return self.get(self.base_url, params=urlencode(data))
 
     def details(self, job_id):
         """
