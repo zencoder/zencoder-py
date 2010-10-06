@@ -52,7 +52,11 @@ class HTTPBackend(object):
         Returns the raw_body as json (the default) or XML
         """
         if not self.as_xml:
-            return json.loads(raw_body)
+            # only parse json when it exists, else just return None
+            if not raw_body or raw_body == ' ':
+                return None
+            else:
+                return json.loads(raw_body)
 
     def post(self, url, body=None):
         """
