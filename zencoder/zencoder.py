@@ -189,9 +189,46 @@ class Notification(object):
 
 class Account(HTTPBackend):
     """ Account object """
-    def __init__(self, api_key, as_xml=False):
+    def __init__(self, api_key=None, as_xml=False):
         """
         Initializes an Account object
         """
         super(Account, self).__init__(api_key, as_xml, 'account')
+
+    def create(self, email, tos=True, options=None):
+        """
+        Creates an account with Zencoder, no API Key necessary.
+        """
+        data = {'email': email,
+                'terms_of_service': int(tos)}
+        if options:
+            data.update(options)
+
+        return self.post(self.base_url, body=self.encode(data))
+
+    def details(self):
+        """
+        Gets your account details.
+        """
+        data = {'api_key': self.api_key}
+
+        return self.get(self.base_url, params=urlencode(data))
+
+    def integration(self):
+        """
+        Puts your account into integration mode.
+        """
+        data = {'api_key': self.api_key}
+
+        return self.get(self.base_url + '/integration',
+                        params=urlencode(data))
+
+    def live(self):
+        """
+        Puts your account into live mode."
+        """
+        data = {'api_key': self.api_key}
+
+        return self.get(self.base_url + '/live',
+                        params=urlencode(data))
 
