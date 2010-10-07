@@ -10,6 +10,8 @@ or with pip:
 
 ## Dependencies
 zencoder-py depends on [httplib2](http://code.google.com/p/httplib2/)
+it uses the json module, which is only in 2.6 python or greater
+and will depend on some package for xml
 
 it uses the json module, which is only in 2.6 python or greater
 
