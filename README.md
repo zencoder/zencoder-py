@@ -9,11 +9,20 @@ or with pip:
     pip install zencoder
 
 ## Dependencies
-zencoder-py depends on [httplib2](http://code.google.com/p/httplib2/)
-it uses the json module, which is only in 2.6 python or greater
-and will depend on some package for xml
+zencoder-py depends on [httplib2](http://code.google.com/p/httplib2/), and uses the json module and will depend on some package for xml when I get around to supporting it.
 
-it uses the json module, which is only in 2.6 python or greater
+Install httplib2 with pip or easy_install.
 
-and will depend on some package for xml
+## Usage
+
+    from zencoder import Zencoder
+    zen = Zencoder('abc123')
+
+    # creates an encoding job with the defaults
+    response = zen.job.create('http://input-file/movie.avi')
+    print response.code
+    print response.body
+    print response.body['id']
+
+**Note:** If you set the **ZENCODER\_API\_KEY** environment variable to your api key, you don't have to provide it when initializing Zencoder.
 
