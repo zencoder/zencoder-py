@@ -16,7 +16,7 @@ Install httplib2 with pip or easy_install.
 ## Usage
 
     from zencoder import Zencoder
-    zen = Zencoder('abc123')
+    zen = Zencoder('abc123') # enter your api key
 
     # creates an encoding job with the defaults
     response = zen.job.create('http://input-file/movie.avi')
