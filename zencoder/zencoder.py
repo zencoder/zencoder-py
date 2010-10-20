@@ -3,9 +3,24 @@ Main Zencoder module
 """
 
 import os
-import json
 import httplib2
 from urllib import urlencode
+
+# Note: I've seen this pattern for dealing with json in different pythons
+# in a lot of modules -- if there's a better way, I'd love to use it.
+try:
+    # python 2.6 and greater
+    import json
+except ImportError:
+    try:
+        # python 2.5
+        import simplejson
+        json = simplejson
+    except ImportError:
+        # if we're in django or Google AppEngine land
+        # use this as a last resort
+        from django.utils import simplejson
+        json = simplejson
 
 class ZencoderError(Exception):
     pass
