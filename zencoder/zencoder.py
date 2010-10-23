@@ -147,12 +147,12 @@ class Output(HTTPBackend):
         """
         super(Output, self).__init__(api_key, as_xml, 'outputs')
 
-    def progress(self, id):
+    def progress(self, output_id):
         """
         Gets the given output id's progress.
         """
         data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/progress' % str(id),
+        return self.get(self.base_url + '/%s/progress' % str(output_id),
                         params=urlencode(data))
 
 class Job(HTTPBackend):
