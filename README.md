@@ -19,10 +19,14 @@ Install httplib2 with pip or easy_install.
     zen = Zencoder('abc123') # enter your api key
 
     # creates an encoding job with the defaults
-    response = zen.job.create('http://input-file/movie.avi')
-    print response.code
-    print response.body
-    print response.body['id']
+    job = zen.job.create('http://input-file/movie.avi')
+    print job.code
+    print job.body
+    print job.body['id']
+
+    # get the transcode progress of the first output
+    progress = zen.output.progress(job.body['outputs'][0]['id'])
+    print progress.body
 
 **Note:** If you set the **ZENCODER\_API\_KEY** environment variable to your api key, you don't have to provide it when initializing Zencoder.
 

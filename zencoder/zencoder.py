@@ -6,8 +6,8 @@ import os
 import httplib2
 from urllib import urlencode
 
-# Note: I've seen this pattern for dealing with json in different pythons
-# in a lot of modules -- if there's a better way, I'd love to use it.
+# Note: I've seen this pattern for dealing with json in different versions of
+# python in a lot of modules -- if there's a better way, I'd love to use it.
 try:
     # python 2.6 and greater
     import json
@@ -129,6 +129,7 @@ class Zencoder(object):
         self.as_xml = as_xml
         self.job = Job(self.api_key, self.as_xml)
         self.account = Account(self.api_key, self.as_xml)
+        self.output = Output(self.api_key, self.as_xml)
 
 class Response(object):
     """ Response object """
@@ -138,9 +139,21 @@ class Response(object):
         self.raw_body = raw_body
         self.raw_response = raw_response
 
-class Output(object):
-    """ Output object """
-    pass
+class Output(HTTPBackend):
+    """ Gets information regarding outputs """
+    def __init__(self, api_key, as_xml=False):
+        """
+        Initialize an Output object
+        """
+        super(Output, self).__init__(api_key, as_xml, 'outputs')
+
+    def progress(self, id):
+        """
+        Gets the given job id's progress
+        """
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/%s/progress' % str(id),
+                        params=urlencode(data))
 
 class Job(HTTPBackend):
     """
