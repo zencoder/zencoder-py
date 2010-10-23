@@ -40,7 +40,7 @@ Install httplib2 with pip or easy_install.
     web = {
               'label': 'web',
               'url': 's3://output-bucket/output-file.vp8',
-              'video_codec':, 'vp8
+              'video_codec':, 'vp8'
           }
     # the outputs kwarg requires an iterable
     outputs = (iphone, web)
