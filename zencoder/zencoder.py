@@ -169,12 +169,17 @@ class Job(HTTPBackend):
         """
         Create a job
 
+        @param input: the input url as string
+        @param outputs: a list of output dictionaries
+        @param options: a dictionary of job options
         """
         data = {"api_key": self.api_key, "input": input}
         if outputs:
             data['outputs'] = outputs
+
         if options:
-            data['options'] = options
+            data.update(options)
+
         return self.post(self.base_url, body=self.encode(data))
 
     def list(self, page=1, per_page=50):
