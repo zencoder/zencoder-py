@@ -1,1 +1,2 @@
-from zencoder import Zencoder
+from core import Zencoder
+
