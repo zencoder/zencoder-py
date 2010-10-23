@@ -132,12 +132,60 @@ class Zencoder(object):
         self.output = Output(self.api_key, self.as_xml)
 
 class Response(object):
-    """ Response object """
+    """
+    The Response object stores the details of an API request in an XML/JSON
+    agnostic way.
+    """
     def __init__(self, code, body, raw_body, raw_response):
         self.code = code
         self.body = body
         self.raw_body = raw_body
         self.raw_response = raw_response
+
+class Account(HTTPBackend):
+    """ Account object """
+    def __init__(self, api_key=None, as_xml=False):
+        """
+        Initializes an Account object
+        """
+        super(Account, self).__init__(api_key, as_xml, 'account')
+
+    def create(self, email, tos=True, options=None):
+        """
+        Creates an account with Zencoder, no API Key necessary.
+        """
+        data = {'email': email,
+                'terms_of_service': int(tos)}
+        if options:
+            data.update(options)
+
+        return self.post(self.base_url, body=self.encode(data))
+
+    def details(self):
+        """
+        Gets your account details.
+        """
+        data = {'api_key': self.api_key}
+
+        return self.get(self.base_url, params=urlencode(data))
+
+    def integration(self):
+        """
+        Puts your account into integration mode.
+        """
+        data = {'api_key': self.api_key}
+
+        return self.get(self.base_url + '/integration',
+                        params=urlencode(data))
+
+    def live(self):
+        """
+        Puts your account into live mode."
+        """
+        data = {'api_key': self.api_key}
+
+        return self.get(self.base_url + '/live',
+                        params=urlencode(data))
 
 class Output(HTTPBackend):
     """ Gets information regarding outputs """
@@ -214,53 +262,4 @@ class Job(HTTPBackend):
         Deletes a job
         """
         pass
-
-class Notification(object):
-    """ Notification object """
-    pass
-
-class Account(HTTPBackend):
-    """ Account object """
-    def __init__(self, api_key=None, as_xml=False):
-        """
-        Initializes an Account object
-        """
-        super(Account, self).__init__(api_key, as_xml, 'account')
-
-    def create(self, email, tos=True, options=None):
-        """
-        Creates an account with Zencoder, no API Key necessary.
-        """
-        data = {'email': email,
-                'terms_of_service': int(tos)}
-        if options:
-            data.update(options)
-
-        return self.post(self.base_url, body=self.encode(data))
-
-    def details(self):
-        """
-        Gets your account details.
-        """
-        data = {'api_key': self.api_key}
-
-        return self.get(self.base_url, params=urlencode(data))
-
-    def integration(self):
-        """
-        Puts your account into integration mode.
-        """
-        data = {'api_key': self.api_key}
-
-        return self.get(self.base_url + '/integration',
-                        params=urlencode(data))
-
-    def live(self):
-        """
-        Puts your account into live mode."
-        """
-        data = {'api_key': self.api_key}
-
-        return self.get(self.base_url + '/live',
-                        params=urlencode(data))
 
