@@ -143,13 +143,13 @@ class Output(HTTPBackend):
     """ Gets information regarding outputs """
     def __init__(self, api_key, as_xml=False):
         """
-        Initialize an Output object
+        Contains all API methods relating to Outputs.
         """
         super(Output, self).__init__(api_key, as_xml, 'outputs')
 
     def progress(self, id):
         """
-        Gets the given job id's progress
+        Gets the given output id's progress.
         """
         data = {'api_key': self.api_key}
         return self.get(self.base_url + '/%s/progress' % str(id),
@@ -157,8 +157,7 @@ class Output(HTTPBackend):
 
 class Job(HTTPBackend):
     """
-    Contains all the methods that can be performed relating to Jobs with
-    the Zencoder API
+    Contains all API methods relating to transcoding Jobs.
     """
     def __init__(self, api_key, as_xml=False):
         """
