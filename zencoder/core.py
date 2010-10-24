@@ -73,14 +73,17 @@ class HTTPBackend(object):
             else:
                 return json.loads(raw_body)
 
-    def post(self, url, body=None):
+    def delete(self, url, params=None):
         """
-        Executes an HTTP POST request for the given URL
-        """
-        response, content = self.http.request(url, method="POST",
-                                              body=body,
-                                              headers=self.headers)
+        Executes an HTTP DELETE request for the given URL
 
+        params should be a urllib.urlencoded string
+        """
+        if params:
+            url = '?'.join([url, params])
+
+        response, content = self.http.request(url, method="DELETE",
+                                              headers=self.headers)
         return self.process(response, content)
 
     def get(self, url, params=None):
@@ -94,6 +97,16 @@ class HTTPBackend(object):
 
         response, content = self.http.request(url, method="GET",
                                               headers=self.headers)
+        return self.process(response, content)
+
+    def post(self, url, body=None):
+        """
+        Executes an HTTP POST request for the given URL
+        """
+        response, content = self.http.request(url, method="POST",
+                                              body=body,
+                                              headers=self.headers)
+
         return self.process(response, content)
 
     def process(self, http_response, content):
