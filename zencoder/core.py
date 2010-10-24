@@ -254,25 +254,33 @@ class Job(HTTPBackend):
 
     def details(self, job_id):
         """
-        Get some job details
+        Gets details for the given job
         """
-        pass
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/%s' % str(job_id),
+                        params=urlencode(data))
 
     def resubmit(self, job_id):
         """
         Resubmits a job
         """
-        pass
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/%s/resubmit' % str(job_id),
+                        params=urlencode(data))
 
     def cancel(self, job_id):
         """
         Cancels a job
         """
-        pass
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/%s/cancel' % str(job_id),
+                        params=urlencode(data))
 
     def delete(self, job_id):
         """
         Deletes a job
         """
-        pass
+        data = {'api_key': self.api_key}
+        return self.delete(self.base_url + '/%s' % str(job_id),
+                        params=urlencode(data))
 
