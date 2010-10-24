@@ -72,6 +72,8 @@ class HTTPBackend(object):
                 return None
             else:
                 return json.loads(raw_body)
+        else:
+            raise NotImplementedError('Decoding as XML is not supported.')
 
     def delete(self, url, params=None):
         """
