@@ -88,13 +88,14 @@ class HTTPBackend(object):
                                               headers=self.headers)
         return self.process(response, content)
 
-    def get(self, url, params=None):
+    def get(self, url, data=None):
         """
         Executes an HTTP GET request for the given URL
 
-        params should be a urllib.urlencoded string
+        data should be a dictionary of url parameters
         """
-        if params:
+        if data:
+            params = urlencode(data)
             url = '?'.join([url, params])
 
         response, content = self.http.request(url, method="GET",
@@ -182,7 +183,7 @@ class Account(HTTPBackend):
         """
         data = {'api_key': self.api_key}
 
-        return self.get(self.base_url, params=urlencode(data))
+        return self.get(self.base_url, data=data)
 
     def integration(self):
         """
@@ -190,8 +191,7 @@ class Account(HTTPBackend):
         """
         data = {'api_key': self.api_key}
 
-        return self.get(self.base_url + '/integration',
-                        params=urlencode(data))
+        return self.get(self.base_url + '/integration', data=data)
 
     def live(self):
         """
@@ -199,8 +199,7 @@ class Account(HTTPBackend):
         """
         data = {'api_key': self.api_key}
 
-        return self.get(self.base_url + '/live',
-                        params=urlencode(data))
+        return self.get(self.base_url + '/live', data=data)
 
 class Output(HTTPBackend):
     """ Gets information regarding outputs """
@@ -216,7 +215,7 @@ class Output(HTTPBackend):
         """
         data = {'api_key': self.api_key}
         return self.get(self.base_url + '/%s/progress' % str(output_id),
-                        params=urlencode(data))
+                        data=data)
 
 class Job(HTTPBackend):
     """
@@ -252,31 +251,28 @@ class Job(HTTPBackend):
         data = {"api_key": self.api_key,
                 "page": page,
                 "per_page": per_page}
-        return self.get(self.base_url, params=urlencode(data))
+        return self.get(self.base_url, data=data)
 
     def details(self, job_id):
         """
         Gets details for the given job
         """
         data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s' % str(job_id),
-                        params=urlencode(data))
+        return self.get(self.base_url + '/%s' % str(job_id), data=data)
 
     def resubmit(self, job_id):
         """
         Resubmits a job
         """
         data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/resubmit' % str(job_id),
-                        params=urlencode(data))
+        return self.get(self.base_url + '/%s/resubmit' % str(job_id), data=data)
 
     def cancel(self, job_id):
         """
         Cancels a job
         """
         data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/cancel' % str(job_id),
-                        params=urlencode(data))
+        return self.get(self.base_url + '/%s/cancel' % str(job_id), data=data)
 
     def delete(self, job_id):
         """
