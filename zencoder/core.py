@@ -31,7 +31,7 @@ class HTTPBackend(object):
 
     @FIXME: Build in support for supplying arbitrary backends
     """
-    def __init__(self, api_key, as_xml=False, resource_name=None):
+    def __init__(self, api_key, as_xml=False, resource_name=None, timeout=None):
         """
         Creates an HTTPBackend object, which abstracts out some of the
         library specific HTTP stuff.
@@ -41,7 +41,7 @@ class HTTPBackend(object):
             self.base_url = self.base_url + resource_name
 
         #TODO investigate httplib2 caching and if it is necessary
-        self.http = httplib2.Http()
+        self.http = httplib2.Http(timeout=timeout)
         self.as_xml = as_xml
         self.api_key = api_key
 
@@ -122,7 +122,7 @@ class HTTPBackend(object):
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
-    def __init__(self, api_key=None, as_xml=False):
+    def __init__(self, api_key=None, as_xml=False, timeout=None):
         """
         Initializes Zencoder. You must have a valid API_KEY.
 
@@ -142,9 +142,9 @@ class Zencoder(object):
             self.api_key = api_key
 
         self.as_xml = as_xml
-        self.job = Job(self.api_key, self.as_xml)
-        self.account = Account(self.api_key, self.as_xml)
-        self.output = Output(self.api_key, self.as_xml)
+        self.job = Job(self.api_key, self.as_xml, timeout=timeout)
+        self.account = Account(self.api_key, self.as_xml, timeout=timeout)
+        self.output = Output(self.api_key, self.as_xml, timeout=timeout)
 
 class Response(object):
     """
@@ -159,11 +159,11 @@ class Response(object):
 
 class Account(HTTPBackend):
     """ Account object """
-    def __init__(self, api_key=None, as_xml=False):
+    def __init__(self, api_key=None, as_xml=False, timeout=None):
         """
         Initializes an Account object
         """
-        super(Account, self).__init__(api_key, as_xml, 'account')
+        super(Account, self).__init__(api_key, as_xml, 'account', timeout=timeout)
 
     def create(self, email, tos=True, options=None):
         """
@@ -204,11 +204,11 @@ class Account(HTTPBackend):
 
 class Output(HTTPBackend):
     """ Gets information regarding outputs """
-    def __init__(self, api_key, as_xml=False):
+    def __init__(self, api_key, as_xml=False, timeout=None):
         """
         Contains all API methods relating to Outputs.
         """
-        super(Output, self).__init__(api_key, as_xml, 'outputs')
+        super(Output, self).__init__(api_key, as_xml, 'outputs', timeout=timeout)
 
     def progress(self, output_id):
         """
@@ -222,11 +222,11 @@ class Job(HTTPBackend):
     """
     Contains all API methods relating to transcoding Jobs.
     """
-    def __init__(self, api_key, as_xml=False):
+    def __init__(self, api_key, as_xml=False, timeout=None):
         """
         Initialize a job object
         """
-        super(Job, self).__init__(api_key, as_xml, 'jobs')
+        super(Job, self).__init__(api_key, as_xml, 'jobs', timeout=timeout)
 
     def create(self, input, outputs=None, options=None):
         """
