@@ -50,3 +50,6 @@ Install `httplib2` with `pip` or `easy_install`.
 
 **Note:** If you set the `**ZENCODER\_API\_KEY**` environment variable to your api key, you don't have to provide it when initializing Zencoder.
 
+## Contributors
+    Senko Rasic [github](http://github.com/senko)
+
