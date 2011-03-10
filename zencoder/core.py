@@ -237,9 +237,7 @@ class Job(HTTPBackend):
         @param outputs: a list of output dictionaries
         @param options: a dictionary of job options
         """
-        as_test = 0
-        if (self.test):
-          as_test = 1
+        as_test = int(self.test)
 
         data = {"api_key": self.api_key, "input": input, "test": as_test}
         if outputs:
