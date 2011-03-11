@@ -25,6 +25,11 @@ except ImportError:
 class ZencoderError(Exception):
     pass
 
+class ZencoderResponseError(Exception):
+    def __init__(self, http_response, content):
+        self.http_response = http_response
+        self.content = content
+
 class HTTPBackend(object):
     """
     Abstracts out an HTTP backend, but defaults to httplib2
@@ -117,10 +122,16 @@ class HTTPBackend(object):
         """
         Returns HTTP backend agnostic Response data
         """
-        code = http_response.status
-        body = self.decode(content)
-        response = Response(code, body, content, http_response)
-        return response
+
+        try:
+            code = http_response.status
+            body = self.decode(content)
+            response = Response(code, body, content, http_response)
+
+            return response
+
+        except ValueError as e:
+            raise ZencoderResponseError(http_response, content)
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
