@@ -31,7 +31,7 @@ class HTTPBackend(object):
 
     @FIXME: Build in support for supplying arbitrary backends
     """
-    def __init__(self, api_key, as_xml=False, resource_name=None, timeout=None):
+    def __init__(self, api_key, as_xml=False, resource_name=None, timeout=None, test=False):
         """
         Creates an HTTPBackend object, which abstracts out some of the
         library specific HTTP stuff.
@@ -44,6 +44,7 @@ class HTTPBackend(object):
         self.http = httplib2.Http(timeout=timeout)
         self.as_xml = as_xml
         self.api_key = api_key
+        self.test = test
 
         if self.as_xml:
             self.headers = {'Content-Type': 'application/xml',
@@ -123,7 +124,7 @@ class HTTPBackend(object):
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
-    def __init__(self, api_key=None, as_xml=False, timeout=None):
+    def __init__(self, api_key=None, as_xml=False, timeout=None, test=False):
         """
         Initializes Zencoder. You must have a valid API_KEY.
 
@@ -142,8 +143,9 @@ class Zencoder(object):
         else:
             self.api_key = api_key
 
+        self.test = test
         self.as_xml = as_xml
-        self.job = Job(self.api_key, self.as_xml, timeout=timeout)
+        self.job = Job(self.api_key, self.as_xml, timeout=timeout, test=self.test)
         self.account = Account(self.api_key, self.as_xml, timeout=timeout)
         self.output = Output(self.api_key, self.as_xml, timeout=timeout)
 
@@ -221,11 +223,11 @@ class Job(HTTPBackend):
     """
     Contains all API methods relating to transcoding Jobs.
     """
-    def __init__(self, api_key, as_xml=False, timeout=None):
+    def __init__(self, api_key, as_xml=False, timeout=None, test=False):
         """
         Initialize a job object
         """
-        super(Job, self).__init__(api_key, as_xml, 'jobs', timeout=timeout)
+        super(Job, self).__init__(api_key, as_xml, 'jobs', timeout=timeout, test=test)
 
     def create(self, input, outputs=None, options=None):
         """
@@ -235,7 +237,9 @@ class Job(HTTPBackend):
         @param outputs: a list of output dictionaries
         @param options: a dictionary of job options
         """
-        data = {"api_key": self.api_key, "input": input}
+        as_test = int(self.test)
+
+        data = {"api_key": self.api_key, "input": input, "test": as_test}
         if outputs:
             data['outputs'] = outputs
 
