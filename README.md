@@ -52,4 +52,5 @@ Install `httplib2` with `pip` or `easy_install`.
 
 ## Contributors
  * [Senko Rasic](http://github.com/senko)
+ * [Josh Kennedy](http://github.com/kennedyj)
 
