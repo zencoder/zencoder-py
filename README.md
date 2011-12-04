@@ -3,16 +3,20 @@
 A Python module for the [Zencoder](http://zencoder.com) API
 
 ## Installation
-Install from PyPI using easy_install:
-    easy_install zencoder
-or with pip:
-    pip install zencoder
+Install from PyPI using `easy_install`:
+
+```
+easy_install zencoder
+```
+
+or with `pip`:
+
+```
+pip install zencoder
+```
 
 ## Dependencies
-`zencoder-py` depends on [httplib2](http://code.google.com/p/httplib2/), and uses the `json` module.
-
-Install `httplib2` with `pip` or `easy_install`.
-    pip install httplib2
+`zencoder-py` depends on [httplib2](http://code.google.com/p/httplib2/), and uses the `json` or `simplejson` module.
 
 ## Usage
 
@@ -47,6 +51,16 @@ Install `httplib2` with `pip` or `easy_install`.
     another_job = zen.job.create(input_url, outputs=outputs)
 
 
+## Specifying the API Version
+Set the version of the Zencoder API you want to use as the `api_version` keyword to the `Zencoder` object (defaults to `v2`):
+
+```python
+# set to version 1: https://app.zencoder.com/api/v1/
+zen = Zencoder(api_version='v1')
+
+# set to the edge version: https://app.zencoder.com/api/
+zen = Zencoder(api_version='edge')
+```
 
 **Note:** If you set the `ZENCODER_API_KEY` environment variable to your api key, you don't have to provide it when initializing Zencoder.
 
