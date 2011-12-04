@@ -8,6 +8,7 @@ setup(name='zencoder',
       author_email='alex.schworer@gmail.com',
       url='http://github.com/schworer/zencoder-py',
       license="MIT License",
+      install_requires=['httplib2'],
       packages=['zencoder']
      )
 
