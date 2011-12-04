@@ -36,12 +36,12 @@ class HTTPBackend(object):
 
     @FIXME: Build in support for supplying arbitrary backends
     """
-    def __init__(self, api_key, as_xml=False, resource_name=None, timeout=None, test=False):
+    def __init__(self, base_url, api_key, as_xml=False, resource_name=None, timeout=None, test=False):
         """
         Creates an HTTPBackend object, which abstracts out some of the
         library specific HTTP stuff.
         """
-        self.base_url = 'https://app.zencoder.com/api/'
+        self.base_url = base_url
         if resource_name:
             self.base_url = self.base_url + resource_name
 
@@ -135,7 +135,7 @@ class HTTPBackend(object):
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
-    def __init__(self, api_key=None, as_xml=False, timeout=None, test=False):
+    def __init__(self, api_key=None, api_version=None, as_xml=False, timeout=None, test=False):
         """
         Initializes Zencoder. You must have a valid API_KEY.
 
@@ -143,9 +143,16 @@ class Zencoder(object):
         'ZENCODER_API_KEY' as an environment variable, and it will use
         that, if api_key is unspecified.
 
+        Set api_version='edge' to get the Zencoder development API. (defaults to 'v2')
         Set as_xml=True to get back xml data instead of the default json.
         """
+        if not api_version:
+            api_version = 'v2'
+
         self.base_url = 'https://app.zencoder.com/api/'
+        if not api_version == 'edge':
+            self.base_url = self.base_url + '%s/' % api_version
+
         if not api_key:
             try:
                 self.api_key = os.environ['ZENCODER_API_KEY']
@@ -156,9 +163,9 @@ class Zencoder(object):
 
         self.test = test
         self.as_xml = as_xml
-        self.job = Job(self.api_key, self.as_xml, timeout=timeout, test=self.test)
-        self.account = Account(self.api_key, self.as_xml, timeout=timeout)
-        self.output = Output(self.api_key, self.as_xml, timeout=timeout)
+        self.job = Job(self.base_url, self.api_key, self.as_xml, timeout=timeout, test=self.test)
+        self.account = Account(self.base_url, self.api_key, self.as_xml, timeout=timeout)
+        self.output = Output(self.base_url, self.api_key, self.as_xml, timeout=timeout)
 
 class Response(object):
     """
@@ -173,11 +180,11 @@ class Response(object):
 
 class Account(HTTPBackend):
     """ Account object """
-    def __init__(self, api_key=None, as_xml=False, timeout=None):
+    def __init__(self, base_url, api_key=None, as_xml=False, timeout=None):
         """
         Initializes an Account object
         """
-        super(Account, self).__init__(api_key, as_xml, 'account', timeout=timeout)
+        super(Account, self).__init__(base_url, api_key, as_xml, 'account', timeout=timeout)
 
     def create(self, email, tos=True, options=None):
         """
@@ -216,11 +223,11 @@ class Account(HTTPBackend):
 
 class Output(HTTPBackend):
     """ Gets information regarding outputs """
-    def __init__(self, api_key, as_xml=False, timeout=None):
+    def __init__(self, base_url, api_key, as_xml=False, timeout=None):
         """
         Contains all API methods relating to Outputs.
         """
-        super(Output, self).__init__(api_key, as_xml, 'outputs', timeout=timeout)
+        super(Output, self).__init__(base_url, api_key, as_xml, 'outputs', timeout=timeout)
 
     def progress(self, output_id):
         """
@@ -234,11 +241,11 @@ class Job(HTTPBackend):
     """
     Contains all API methods relating to transcoding Jobs.
     """
-    def __init__(self, api_key, as_xml=False, timeout=None, test=False):
+    def __init__(self, base_url, api_key, as_xml=False, timeout=None, test=False):
         """
         Initialize a job object
         """
-        super(Job, self).__init__(api_key, as_xml, 'jobs', timeout=timeout, test=test)
+        super(Job, self).__init__(base_url, api_key, as_xml, 'jobs', timeout=timeout, test=test)
 
     def create(self, input, outputs=None, options=None):
         """
