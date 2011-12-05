@@ -40,6 +40,7 @@ Install from PyPI using `easy_install` or `pip`.
     outputs = (iphone, web)
     another_job = zen.job.create(input_url, outputs=outputs)
 
+**Note:** If you set the `ZENCODER_API_KEY` environment variable to your api key, you don't have to provide it when initializing Zencoder.
 
 ## Specifying the API Version
 Set the version of the Zencoder API you want to use as the `api_version` keyword to the `Zencoder` object (defaults to `v2`):
@@ -51,8 +52,6 @@ zen = Zencoder(api_version='v1')
 # set to the edge version: https://app.zencoder.com/api/
 zen = Zencoder(api_version='edge')
 ```
-
-**Note:** If you set the `ZENCODER_API_KEY` environment variable to your api key, you don't have to provide it when initializing Zencoder.
 
 ## Contributors
  * [Senko Rasic](http://github.com/senko)
