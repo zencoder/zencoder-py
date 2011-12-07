@@ -45,7 +45,6 @@ class HTTPBackend(object):
         if resource_name:
             self.base_url = self.base_url + resource_name
 
-        #TODO investigate httplib2 caching and if it is necessary
         self.http = httplib2.Http(timeout=timeout)
         self.as_xml = as_xml
         self.api_key = api_key
