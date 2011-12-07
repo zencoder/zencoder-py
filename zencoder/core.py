@@ -185,12 +185,12 @@ class Account(HTTPBackend):
         """
         super(Account, self).__init__(base_url, api_key, as_xml, 'account', timeout=timeout)
 
-    def create(self, email, tos=True, options=None):
+    def create(self, email, tos=1, options=None):
         """
         Creates an account with Zencoder, no API Key necessary.
         """
         data = {'email': email,
-                'terms_of_service': int(tos)}
+                'terms_of_service': str(tos)}
         if options:
             data.update(options)
 
