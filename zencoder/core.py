@@ -129,7 +129,7 @@ class HTTPBackend(object):
 
             return response
 
-        except ValueError as e:
+        except ValueError:
             raise ZencoderResponseError(http_response, content)
 
 class Zencoder(object):
