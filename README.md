@@ -56,5 +56,5 @@ zen = Zencoder(api_version='edge')
 ## Contributors
  * [Senko Rasic](http://github.com/senko)
  * [Josh Kennedy](http://github.com/kennedyj)
- * [Isaac Kelly](http://github.com/isaackelly)
+ * [Issac Kelly](http://github.com/issackelly)
 
