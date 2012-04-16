@@ -280,6 +280,13 @@ class Job(HTTPBackend):
         """
         data = {'api_key': self.api_key}
         return self.get(self.base_url + '/%s' % str(job_id), data=data)
+    
+    def progress(self, job_id):
+        """
+        Gets the given job id's progress.
+        """
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/%s/progress' % str(job_id), data=data)
 
     def resubmit(self, job_id):
         """
