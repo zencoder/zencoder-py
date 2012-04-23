@@ -236,6 +236,14 @@ class Output(HTTPBackend):
         return self.get(self.base_url + '/%s/progress' % str(output_id),
                         data=data)
 
+    def details(self, output_id):
+        """
+        Gets the given output id's details
+        """
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/%s' % str(output_id),
+                        data=data)
+
 class Job(HTTPBackend):
     """
     Contains all API methods relating to transcoding Jobs.
@@ -280,6 +288,10 @@ class Job(HTTPBackend):
         """
         data = {'api_key': self.api_key}
         return self.get(self.base_url + '/%s' % str(job_id), data=data)
+
+    def progress(self, job_id):
+        data = {'api_key': self.api_key}
+        return self.get(self.base_url + '/%s/progress' % str(job_id), data=data)
 
     def resubmit(self, job_id):
         """
