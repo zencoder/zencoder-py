@@ -308,7 +308,7 @@ class Job(HTTPBackend):
         Resubmits a job
         """
         data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/resubmit' % str(job_id), data=data)
+        return self.put(self.base_url + '/%s/resubmit' % str(job_id), data=data)
 
     def cancel(self, job_id):
         """
