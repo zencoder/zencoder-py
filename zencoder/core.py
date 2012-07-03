@@ -121,9 +121,15 @@ class HTTPBackend(object):
         """
         Executes an HTTP PUT request for the given URL
         """
+        _headers = self.headers.copy()
+        if body:
+            content_length = str(len(body))
+        else:
+            content_length = 0
+        _headers['Content-Length'] = str(content_length)
         response, content = self.http.request(url, method="PUT",
                                               body=body,
-                                              headers=self.headers)
+                                              headers=_headers)
 
         return self.process(response, content)
 
@@ -307,15 +313,13 @@ class Job(HTTPBackend):
         """
         Resubmits a job
         """
-        data = {'api_key': self.api_key}
-        return self.put(self.base_url + '/%s/resubmit' % str(job_id), data=data)
+        return self.put(self.base_url + '/%s/resubmit?api_key=%s' % (str(job_id), self.api_key))
 
     def cancel(self, job_id):
         """
         Cancels a job
         """
-        data = {'api_key': self.api_key}
-        return self.put(self.base_url + '/%s/cancel' % str(job_id), data=data)
+        return self.put(self.base_url + '/%s/cancel?api_key=%s' % (str(job_id), self.api_key))
 
     def delete(self, job_id):
         """
