@@ -117,6 +117,16 @@ class HTTPBackend(object):
 
         return self.process(response, content)
 
+    def put(self, url, body=None):
+        """
+        Executes an HTTP PUT request for the given URL
+        """
+        response, content = self.http.request(url, method="PUT",
+                                              body=body,
+                                              headers=self.headers)
+
+        return self.process(response, content)
+
     def process(self, http_response, content):
         """
         Returns HTTP backend agnostic Response data
@@ -305,7 +315,7 @@ class Job(HTTPBackend):
         Cancels a job
         """
         data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/cancel' % str(job_id), data=data)
+        return self.put(self.base_url + '/%s/cancel' % str(job_id), data=data)
 
     def delete(self, job_id):
         """
