@@ -321,7 +321,4 @@ class Job(HTTPBackend):
         """
         Deletes a job
         """
-        data = {'api_key': self.api_key}
-        return self.delete(self.base_url + '/%s' % str(job_id),
-                        params=urlencode(data))
-
+        return self.cancel(job_id)
