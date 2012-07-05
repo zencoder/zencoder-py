@@ -323,6 +323,10 @@ class Job(HTTPBackend):
 
     def delete(self, job_id):
         """
-        Deletes a job
+        Deletes the given `job_id`
+
+        WARNING: This method is aliased to `Job.cancel` -- it is deprecated in
+                 API version 2 and greater.
         """
         return self.cancel(job_id)
+
