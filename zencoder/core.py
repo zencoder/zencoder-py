@@ -56,12 +56,14 @@ class HTTPBackend(object):
         """
         return str(len(body)) if body else "0"
 
+    @property
+    def headers(self):
         if self.as_xml:
-            self.headers = {'Content-Type': 'application/xml',
-                            'Accepts': 'application/xml'}
+            return {'Content-Type': 'application/xml',
+                    'Accepts': 'application/xml'}
         else:
-            self.headers = {'Content-Type': 'application/json',
-                            'Accepts': 'application/json'}
+            return {'Content-Type': 'application/json',
+                    'Accepts': 'application/json'}
 
     def encode(self, data):
         """
@@ -117,6 +119,7 @@ class HTTPBackend(object):
         """
         Executes an HTTP POST request for the given URL
         """
+        headers = self.headers
         headers['Content-Length'] = self.content_length(body)
         response, content = self.http.request(url, method="POST",
                                               body=body,
