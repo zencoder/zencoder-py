@@ -322,15 +322,24 @@ class Job(HTTPBackend):
 
     def resubmit(self, job_id):
         """
-        Resubmits a job
+        Resubmits the given `job_id`
         """
-        return self.put(self.base_url + '/%s/resubmit?api_key=%s' % (str(job_id), self.api_key))
+        data = {'api_key': self.api_key}
+        url = self.base_url + '/%s/resubmit' % str(job_id)
+        return self.put(url, data=data)
 
     def cancel(self, job_id):
         """
-        Cancels a job
+        Cancels the given `job_id`
         """
-        return self.put(self.base_url + '/%s/cancel?api_key=%s' % (str(job_id), self.api_key))
+        if self.version == 'v1':
+            verb = self.get
+        else:
+            verb = self.put
+
+        data = {'api_key': self.api_key}
+        url = self.base_url + '/%s/cancel' % str(job_id)
+        return verb(url, data=data)
 
     def delete(self, job_id):
         """
