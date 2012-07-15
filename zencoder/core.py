@@ -50,6 +50,12 @@ class HTTPBackend(object):
         self.api_key = api_key
         self.test = test
 
+    def content_length(self, body):
+        """
+        Returns the content length as an int for the given body data
+        """
+        return str(len(body)) if body else "0"
+
         if self.as_xml:
             self.headers = {'Content-Type': 'application/xml',
                             'Accepts': 'application/xml'}
@@ -111,6 +117,7 @@ class HTTPBackend(object):
         """
         Executes an HTTP POST request for the given URL
         """
+        headers['Content-Length'] = self.content_length(body)
         response, content = self.http.request(url, method="POST",
                                               body=body,
                                               headers=self.headers)

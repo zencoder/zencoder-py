@@ -34,6 +34,18 @@ class TestZencoder(unittest.TestCase):
         zc = Zencoder(api_version='edge')
         self.assertEquals(zc.base_url, 'https://app.zencoder.com/api/')
 
+    def test_zero_content_length(self):
+        os.environ['ZENCODER_API_KEY'] = 'abcd123'
+        zc = Zencoder()
+        content = None
+        self.assertEquals(zc.job.content_length(content), "0")
+
+    def test_zero_content_length(self):
+        os.environ['ZENCODER_API_KEY'] = 'abcd123'
+        zc = Zencoder()
+        content = "foobar"
+        self.assertEquals(zc.job.content_length(content), "6")
+
 if __name__ == "__main__":
     unittest.main()
 
