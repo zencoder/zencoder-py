@@ -36,7 +36,7 @@ class HTTPBackend(object):
 
     @FIXME: Build in support for supplying arbitrary backends
     """
-    def __init__(self, base_url, api_key, as_xml=False, resource_name=None, timeout=None, test=False):
+    def __init__(self, base_url, api_key, as_xml=False, resource_name=None, timeout=None, test=False, version=None):
         """
         Creates an HTTPBackend object, which abstracts out some of the
         library specific HTTP stuff.
@@ -49,6 +49,7 @@ class HTTPBackend(object):
         self.as_xml = as_xml
         self.api_key = api_key
         self.test = test
+        self.version = version
 
     def content_length(self, body):
         """
