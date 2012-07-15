@@ -36,7 +36,7 @@ class HTTPBackend(object):
 
     @FIXME: Build in support for supplying arbitrary backends
     """
-    def __init__(self, base_url, api_key, as_xml=False, resource_name=None, timeout=None, test=False):
+    def __init__(self, base_url, api_key, as_xml=False, resource_name=None, timeout=None, test=False, version=None):
         """
         Creates an HTTPBackend object, which abstracts out some of the
         library specific HTTP stuff.
@@ -49,13 +49,22 @@ class HTTPBackend(object):
         self.as_xml = as_xml
         self.api_key = api_key
         self.test = test
+        self.version = version
 
+    def content_length(self, body):
+        """
+        Returns the content length as an int for the given body data
+        """
+        return str(len(body)) if body else "0"
+
+    @property
+    def headers(self):
         if self.as_xml:
-            self.headers = {'Content-Type': 'application/xml',
-                            'Accepts': 'application/xml'}
+            return {'Content-Type': 'application/xml',
+                    'Accepts': 'application/xml'}
         else:
-            self.headers = {'Content-Type': 'application/json',
-                            'Accepts': 'application/json'}
+            return {'Content-Type': 'application/json',
+                    'Accepts': 'application/json'}
 
     def encode(self, data):
         """
@@ -111,9 +120,28 @@ class HTTPBackend(object):
         """
         Executes an HTTP POST request for the given URL
         """
+        headers = self.headers
+        headers['Content-Length'] = self.content_length(body)
         response, content = self.http.request(url, method="POST",
                                               body=body,
                                               headers=self.headers)
+
+        return self.process(response, content)
+
+    def put(self, url, data=None, body=None):
+        """
+        Executes an HTTP PUT request for the given URL
+        """
+        headers = self.headers
+        headers['Content-Length'] = self.content_length(body)
+
+        if data:
+            params = urlencode(data)
+            url = '?'.join([url, params])
+
+        response, content = self.http.request(url, method="PUT",
+                                              body=body,
+                                              headers=headers)
 
         return self.process(response, content)
 
@@ -139,7 +167,7 @@ class Zencoder(object):
         Initializes Zencoder. You must have a valid API_KEY.
 
         You can pass in the api_key as an argument, or set
-        'ZENCODER_API_KEY' as an environment variable, and it will use
+        `ZENCODER_API_KEY` as an environment variable, and it will use
         that, if api_key is unspecified.
 
         Set api_version='edge' to get the Zencoder development API. (defaults to 'v2')
@@ -162,9 +190,12 @@ class Zencoder(object):
 
         self.test = test
         self.as_xml = as_xml
-        self.job = Job(self.base_url, self.api_key, self.as_xml, timeout=timeout, test=self.test)
-        self.account = Account(self.base_url, self.api_key, self.as_xml, timeout=timeout)
-        self.output = Output(self.base_url, self.api_key, self.as_xml, timeout=timeout)
+
+        args = (self.base_url, self.api_key, self.as_xml)
+        kwargs = dict(timeout=timeout, test=self.test, version=api_version)
+        self.job = Job(*args, **kwargs)
+        self.account = Account(*args, **kwargs)
+        self.output = Output(*args, **kwargs)
 
 class Response(object):
     """
@@ -179,11 +210,12 @@ class Response(object):
 
 class Account(HTTPBackend):
     """ Account object """
-    def __init__(self, base_url, api_key=None, as_xml=False, timeout=None):
+    def __init__(self, *args, **kwargs):
         """
         Initializes an Account object
         """
-        super(Account, self).__init__(base_url, api_key, as_xml, 'account', timeout=timeout)
+        kwargs['resource_name'] = 'account'
+        super(Account, self).__init__(*args, **kwargs)
 
     def create(self, email, tos=1, options=None):
         """
@@ -214,7 +246,7 @@ class Account(HTTPBackend):
 
     def live(self):
         """
-        Puts your account into live mode."
+        Puts your account into live mode.
         """
         data = {'api_key': self.api_key}
 
@@ -222,11 +254,12 @@ class Account(HTTPBackend):
 
 class Output(HTTPBackend):
     """ Gets information regarding outputs """
-    def __init__(self, base_url, api_key, as_xml=False, timeout=None):
+    def __init__(self, *args, **kwargs):
         """
         Contains all API methods relating to Outputs.
         """
-        super(Output, self).__init__(base_url, api_key, as_xml, 'outputs', timeout=timeout)
+        kwargs['resource_name'] = 'outputs'
+        super(Output, self).__init__(*args, **kwargs)
 
     def progress(self, output_id):
         """
@@ -248,15 +281,16 @@ class Job(HTTPBackend):
     """
     Contains all API methods relating to transcoding Jobs.
     """
-    def __init__(self, base_url, api_key, as_xml=False, timeout=None, test=False):
+    def __init__(self, *args, **kwargs):
         """
-        Initialize a job object
+        Initializes a job object
         """
-        super(Job, self).__init__(base_url, api_key, as_xml, 'jobs', timeout=timeout, test=test)
+        kwargs['resource_name'] = 'jobs'
+        super(Job, self).__init__(*args, **kwargs)
 
     def create(self, input, outputs=None, options=None):
         """
-        Create a job
+        Creates a job
 
         @param input: the input url as string
         @param outputs: a list of output dictionaries
@@ -275,7 +309,10 @@ class Job(HTTPBackend):
 
     def list(self, page=1, per_page=50):
         """
-        List some jobs
+        Lists some jobs.
+
+        @param page: <int> the page of results to return
+        @param per_page: <int> the number of results per page
         """
         data = {"api_key": self.api_key,
                 "page": page,
@@ -295,23 +332,31 @@ class Job(HTTPBackend):
 
     def resubmit(self, job_id):
         """
-        Resubmits a job
+        Resubmits the given `job_id`
         """
         data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/resubmit' % str(job_id), data=data)
+        url = self.base_url + '/%s/resubmit' % str(job_id)
+        return self.put(url, data=data)
 
     def cancel(self, job_id):
         """
-        Cancels a job
+        Cancels the given `job_id`
         """
+        if self.version == 'v1':
+            verb = self.get
+        else:
+            verb = self.put
+
         data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/cancel' % str(job_id), data=data)
+        url = self.base_url + '/%s/cancel' % str(job_id)
+        return verb(url, data=data)
 
     def delete(self, job_id):
         """
-        Deletes a job
+        Deletes the given `job_id`
+
+        WARNING: This method is aliased to `Job.cancel` -- it is deprecated in
+                 API version 2 and greater.
         """
-        data = {'api_key': self.api_key}
-        return self.delete(self.base_url + '/%s' % str(job_id),
-                        params=urlencode(data))
+        return self.cancel(job_id)
 
