@@ -127,19 +127,20 @@ class HTTPBackend(object):
 
         return self.process(response, content)
 
-    def put(self, url, body=None):
+    def put(self, url, data=None, body=None):
         """
         Executes an HTTP PUT request for the given URL
         """
-        _headers = self.headers.copy()
-        if body:
-            content_length = str(len(body))
-        else:
-            content_length = 0
-        _headers['Content-Length'] = str(content_length)
+        headers = self.headers
+        headers['Content-Length'] = self.content_length(body)
+
+        if data:
+            params = urlencode(data)
+            url = '?'.join([url, params])
+
         response, content = self.http.request(url, method="PUT",
                                               body=body,
-                                              headers=_headers)
+                                              headers=headers)
 
         return self.process(response, content)
 
