@@ -1,7 +1,3 @@
-"""
-Main Zencoder module
-"""
-
 import os
 import httplib2
 from urllib import urlencode
@@ -32,15 +28,14 @@ class ZencoderResponseError(Exception):
 
 class HTTPBackend(object):
     """
-    Abstracts out an HTTP backend, but defaults to httplib2
+    Abstracts out an HTTP backend, but defaults to httplib2. Required arguments
+    are `base_url` and `api_key`.
 
-    @FIXME: Build in support for supplying arbitrary backends
+    .. note::
+       While `as_xml` is provided as a keyword argument, XML or input or output
+       is not supported.
     """
     def __init__(self, base_url, api_key, as_xml=False, resource_name=None, timeout=None, test=False, version=None):
-        """
-        Creates an HTTPBackend object, which abstracts out some of the
-        library specific HTTP stuff.
-        """
         self.base_url = base_url
         if resource_name:
             self.base_url = self.base_url + resource_name
@@ -53,12 +48,16 @@ class HTTPBackend(object):
 
     def content_length(self, body):
         """
-        Returns the content length as an int for the given body data
+        Returns the content length as an int for the given `body` data. Used by
+        PUT and POST requests to set the Content-Length header.
         """
         return str(len(body)) if body else "0"
 
     @property
     def headers(self):
+        """ Returns default headers, by setting the Content-Type and Accepts
+        headers.
+        """
         if self.as_xml:
             return {'Content-Type': 'application/xml',
                     'Accepts': 'application/xml'}
@@ -68,8 +67,11 @@ class HTTPBackend(object):
 
     def encode(self, data):
         """
-        Encodes data as either JSON or XML, so that it can be passed onto
-        the Zencoder API
+        Encodes data as JSON (by calling `json.dumps`), so that it can be
+        passed onto the Zencoder API.
+
+        .. note::
+           Encoding as XML is not supported.
         """
         if not self.as_xml:
             return json.dumps(data)
@@ -78,7 +80,11 @@ class HTTPBackend(object):
 
     def decode(self, raw_body):
         """
-        Returns the raw_body as json (the default) or XML
+        Returns the JSON-encoded `raw_body` and decodes it to a `dict` (using
+        `json.loads`).
+
+        .. note::
+           Decoding as XML is not supported.
         """
         if not self.as_xml:
             # only parse json when it exists, else just return None
