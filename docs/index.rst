@@ -9,12 +9,12 @@ Welcome to zencoder-py's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    zencoder
 
 Introduction:
-`zencoder` is a Python module for the [Zencoder](http://zencoder.com) API
+`zencoder` is a Python module for the Zencoder_ API
 
 Source is hosted at github: http://github.com/schworer/zencoder-py
 
@@ -25,4 +25,6 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _Zencoder: http://zencoder.com/api
 
