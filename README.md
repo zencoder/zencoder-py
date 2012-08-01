@@ -60,3 +60,5 @@ Docs are in progress, and hosted at Read the Docs: http://zencoder.rtfd.org
  * [Josh Kennedy](http://github.com/kennedyj)
  * [Issac Kelly](http://github.com/issackelly)
 
+[![Build Status](https://secure.travis-ci.org/schworer/zencoder-py.png)](http://travis-ci.org/schworer/zencoder-py)
+
