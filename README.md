@@ -1,6 +1,6 @@
 # Zencoder
 
-A Python module for the [Zencoder](http://zencoder.com) API
+A Python module for the [Zencoder](http://zencoder.com) API.
 
 ## Installation
 Install from PyPI using `easy_install` or `pip`.
@@ -52,6 +52,8 @@ zen = Zencoder(api_version='v1')
 # set to the edge version: https://app.zencoder.com/api/
 zen = Zencoder(api_version='edge')
 ```
+## Documentation
+Docs are in progress, and hosted at Read the Docs: http://zencoder.rtfd.org
 
 ## Contributors
  * [Senko Rasic](http://github.com/senko)
