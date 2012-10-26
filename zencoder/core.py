@@ -202,6 +202,9 @@ class Zencoder(object):
         self.job = Job(*args, **kwargs)
         self.account = Account(*args, **kwargs)
         self.output = Output(*args, **kwargs)
+        self.report = None
+        if api_version == 'v2':
+            self.report = Report(*args, **kwargs)
 
 class Response(object):
     """
@@ -366,3 +369,21 @@ class Job(HTTPBackend):
         """
         return self.cancel(job_id)
 
+class Report(HTTPBackend):
+    def __init__(self, *args, **kwargs):
+        """
+        Contains all API methods relating to Outputs.
+        """
+        kwargs['resource_name'] = 'reports'
+        super(Report, self).__init__(*args, **kwargs)
+
+    def details(self, start_date=None, end_date=None, grouping=None):
+        data = {}
+        if start_date:
+            data['from'] = start_date
+        if to:
+            data['to'] = end_date
+        if grouping:
+            data['grouping'] = grouping
+        url = self.base_url + '/reports/minutes'
+        self.get(url, data)
