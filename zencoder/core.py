@@ -117,6 +117,7 @@ class HTTPBackend(object):
         if data:
             params = urlencode(data)
             url = '?'.join([url, params])
+
         response, content = self.http.request(url, method="GET",
                                               headers=self.headers)
         return self.process(response, content)
