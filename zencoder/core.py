@@ -117,7 +117,6 @@ class HTTPBackend(object):
         if data:
             params = urlencode(data)
             url = '?'.join([url, params])
-
         response, content = self.http.request(url, method="GET",
                                               headers=self.headers)
         return self.process(response, content)
@@ -378,12 +377,18 @@ class Report(HTTPBackend):
         super(Report, self).__init__(*args, **kwargs)
 
     def details(self, start_date=None, end_date=None, grouping=None):
-        data = {}
+        """
+        Gets a detailed Report
+        """
+        data = {'api_key': self.api_key}
         if start_date:
             data['from'] = start_date
-        if to:
+
+        if end_date:
             data['to'] = end_date
+
         if grouping:
             data['grouping'] = grouping
-        url = self.base_url + '/reports/minutes'
-        self.get(url, data)
+
+        url = self.base_url + '/minutes'
+        return self.get(url, data=data)
