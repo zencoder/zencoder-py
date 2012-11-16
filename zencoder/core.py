@@ -68,7 +68,8 @@ class HTTPBackend(object):
 
         return {'Content-Type': 'application/' + content_type,
                 'Accepts': 'application/' + content_type,
-                'User-Agent': 'Zencoder-Py v' + str(lib_version)}
+                'User-Agent': 'Zencoder-Py v' + str(lib_version),
+                'Zencoder-Api-Key': self.api_key}
 
     def encode(self, data):
         """
@@ -243,25 +244,22 @@ class Account(HTTPBackend):
         """
         Gets your account details.
         """
-        data = {'api_key': self.api_key}
 
-        return self.get(self.base_url, data=data)
+        return self.get(self.base_url)
 
     def integration(self):
         """
         Puts your account into integration mode.
         """
-        data = {'api_key': self.api_key}
 
-        return self.get(self.base_url + '/integration', data=data)
+        return self.put(self.base_url + '/integration')
 
     def live(self):
         """
         Puts your account into live mode.
         """
-        data = {'api_key': self.api_key}
 
-        return self.get(self.base_url + '/live', data=data)
+        return self.put(self.base_url + '/live')
 
 class Output(HTTPBackend):
     """ Gets information regarding outputs """
@@ -276,17 +274,13 @@ class Output(HTTPBackend):
         """
         Gets the given output id's progress.
         """
-        data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/progress' % str(output_id),
-                        data=data)
+        return self.get(self.base_url + '/%s/progress' % str(output_id))
 
     def details(self, output_id):
         """
         Gets the given output id's details
         """
-        data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s' % str(output_id),
-                        data=data)
+        return self.get(self.base_url + '/%s' % str(output_id))
 
 class Job(HTTPBackend):
     """
@@ -309,7 +303,7 @@ class Job(HTTPBackend):
         """
         as_test = int(self.test)
 
-        data = {"api_key": self.api_key, "input": input, "test": as_test}
+        data = {"input": input, "test": as_test}
         if outputs:
             data['outputs'] = outputs
 
@@ -325,8 +319,7 @@ class Job(HTTPBackend):
         @param page: <int> the page of results to return
         @param per_page: <int> the number of results per page
         """
-        data = {"api_key": self.api_key,
-                "page": page,
+        data = {"page": page,
                 "per_page": per_page}
         return self.get(self.base_url, data=data)
 
@@ -334,20 +327,17 @@ class Job(HTTPBackend):
         """
         Gets details for the given job
         """
-        data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s' % str(job_id), data=data)
+        return self.get(self.base_url + '/%s' % str(job_id))
 
     def progress(self, job_id):
-        data = {'api_key': self.api_key}
-        return self.get(self.base_url + '/%s/progress' % str(job_id), data=data)
+        return self.get(self.base_url + '/%s/progress' % str(job_id))
 
     def resubmit(self, job_id):
         """
         Resubmits the given `job_id`
         """
-        data = {'api_key': self.api_key}
         url = self.base_url + '/%s/resubmit' % str(job_id)
-        return self.put(url, data=data)
+        return self.put(url)
 
     def cancel(self, job_id):
         """
@@ -358,9 +348,8 @@ class Job(HTTPBackend):
         else:
             verb = self.put
 
-        data = {'api_key': self.api_key}
         url = self.base_url + '/%s/cancel' % str(job_id)
-        return verb(url, data=data)
+        return verb(url)
 
     def delete(self, job_id):
         """
