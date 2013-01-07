@@ -2,6 +2,8 @@ import os
 import httplib2
 from urllib import urlencode
 
+LIB_VERSION = '0.5.2'
+
 # Note: I've seen this pattern for dealing with json in different versions of
 # python in a lot of modules -- if there's a better way, I'd love to use it.
 try:
@@ -64,7 +66,7 @@ class HTTPBackend(object):
             'Content-Type': 'application/{0}'.format(content_type),
             'Accepts': 'application/{0}'.format(content_type),
             'Zencoder-Api-Key': self.api_key,
-            'User-Agent': 'zencoder-py'
+            'User-Agent': 'zencoder-py v{0}'.format(LIB_VERSION)
         }
 
         return headers

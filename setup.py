@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 setup(name='zencoder',
-      version='0.5',
+      version='0.5.2',
       description='Integration library for Zencoder',
       author='Alex Schworer',
       author_email='alex.schworer@gmail.com',
