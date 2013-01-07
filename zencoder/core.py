@@ -2,9 +2,6 @@ import os
 import httplib2
 from urllib import urlencode
 
-# Library version. Should probably be rewritten to match the version in setup.py
-lib_version = 0.5;
-
 # Note: I've seen this pattern for dealing with json in different versions of
 # python in a lot of modules -- if there's a better way, I'd love to use it.
 try:
@@ -61,15 +58,16 @@ class HTTPBackend(object):
         """ Returns default headers, by setting the Content-Type and Accepts
         headers.
         """
-        if self.as_xml:
-            content_type = 'xml'
-        else :
-            content_type = 'json'
+        content_type = 'xml' if self.as_xml else 'json'
 
-        return {'Content-Type': 'application/' + content_type,
-                'Accepts': 'application/' + content_type,
-                'User-Agent': 'Zencoder-Py v' + str(lib_version),
-                'Zencoder-Api-Key': self.api_key}
+        headers = {
+            'Content-Type': 'application/{0}'.format(content_type),
+            'Accepts': 'application/{0}'.format(content_type),
+            'Zencoder-Api-Key': self.api_key,
+            'User-Agent': 'zencoder-py'
+        }
+
+        return headers
 
     def encode(self, data):
         """
