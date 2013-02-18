@@ -1,6 +1,7 @@
 import os
 import httplib2
 from urllib import urlencode
+from datetime import datetime
 
 # Note: I've seen this pattern for dealing with json in different versions of
 # python in a lot of modules -- if there's a better way, I'd love to use it.
@@ -372,21 +373,28 @@ class Job(HTTPBackend):
 class Report(HTTPBackend):
     def __init__(self, *args, **kwargs):
         """
-        Contains all API methods relating to Outputs.
+        Contains all API methods relating to Reports.
         """
         kwargs['resource_name'] = 'reports'
         super(Report, self).__init__(*args, **kwargs)
 
-    def details(self, start_date=None, end_date=None, grouping=None):
+    def minutes(self, start_date=None, end_date=None, grouping=None):
         """
-        Gets a detailed Report
+        Gets a detailed Report of encoded minutes and billable minutes
+        for a date range
+        @param start_date: Start date of report (If not submitted,
+            API defaults to 30 days ago)
+        @param end_date: End date of report (If not submitted, API defaults to
+            yesterday)
+        @param grouping: Minute usage for only one report grouping
         """
         data = {'api_key': self.api_key}
+        date_format = '%Y-%m-%d'
         if start_date:
-            data['from'] = start_date
+            data['from'] = datetime.strftime(start_date, date_format).date()
 
         if end_date:
-            data['to'] = end_date
+            data['to'] = datetime.strftime(end_date, date_format).date()
 
         if grouping:
             data['grouping'] = grouping
