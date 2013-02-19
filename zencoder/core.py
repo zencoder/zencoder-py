@@ -1,6 +1,7 @@
 import os
 import httplib2
 from urllib import urlencode
+from datetime import datetime
 
 LIB_VERSION = '0.5.2'
 
@@ -208,6 +209,9 @@ class Zencoder(object):
         self.job = Job(*args, **kwargs)
         self.account = Account(*args, **kwargs)
         self.output = Output(*args, **kwargs)
+        self.report = None
+        if api_version == 'v2':
+            self.report = Report(*args, **kwargs)
 
 class Response(object):
     """
@@ -360,3 +364,34 @@ class Job(HTTPBackend):
         """
         return self.cancel(job_id)
 
+class Report(HTTPBackend):
+    def __init__(self, *args, **kwargs):
+        """
+        Contains all API methods relating to Reports.
+        """
+        kwargs['resource_name'] = 'reports'
+        super(Report, self).__init__(*args, **kwargs)
+
+    def minutes(self, start_date=None, end_date=None, grouping=None):
+        """
+        Gets a detailed Report of encoded minutes and billable minutes
+        for a date range
+        @param start_date: Start date of report (If not submitted,
+            API defaults to 30 days ago)
+        @param end_date: End date of report (If not submitted, API defaults to
+            yesterday)
+        @param grouping: Minute usage for only one report grouping
+        """
+        data = {'api_key': self.api_key}
+        date_format = '%Y-%m-%d'
+        if start_date:
+            data['from'] = datetime.strftime(start_date, date_format)
+
+        if end_date:
+            data['to'] = datetime.strftime(end_date, date_format)
+
+        if grouping:
+            data['grouping'] = grouping
+
+        url = self.base_url + '/minutes'
+        return self.get(url, data=data)
