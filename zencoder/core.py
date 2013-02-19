@@ -391,10 +391,10 @@ class Report(HTTPBackend):
         data = {'api_key': self.api_key}
         date_format = '%Y-%m-%d'
         if start_date:
-            data['from'] = datetime.strftime(start_date, date_format).date()
+            data['from'] = datetime.strftime(start_date, date_format)
 
         if end_date:
-            data['to'] = datetime.strftime(end_date, date_format).date()
+            data['to'] = datetime.strftime(end_date, date_format)
 
         if grouping:
             data['grouping'] = grouping
