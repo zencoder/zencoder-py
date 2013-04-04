@@ -64,7 +64,7 @@ class HTTPBackend(object):
 
         headers = {
             'Content-Type': 'application/{0}'.format(content_type),
-            'Accepts': 'application/{0}'.format(content_type),
+            'Accept': 'application/{0}'.format(content_type),
             'Zencoder-Api-Key': self.api_key,
             'User-Agent': 'zencoder-py v{0}'.format(LIB_VERSION)
         }
