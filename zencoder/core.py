@@ -374,8 +374,17 @@ class Report(HTTPBackend):
 
     def minutes(self, start_date=None, end_date=None, grouping=None):
         """
-        Gets a detailed Report of encoded minutes and billable minutes
-        for a date range
+        Gets a detailed Report of encoded minutes and billable minutes for a 
+        date range.
+
+        **Warning**: `start_date` and `end_date` must be `datetime.date` objects.
+
+        Example:
+            import datetime
+            start = datetime.date(2012, 12, 31)
+            end = datetime.today()
+            data = z.report.minutes(start, end)
+
         @param start_date: Start date of report (If not submitted,
             API defaults to 30 days ago)
         @param end_date: End date of report (If not submitted, API defaults to
