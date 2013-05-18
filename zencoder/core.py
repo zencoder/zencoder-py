@@ -1,5 +1,5 @@
 import os
-import httplib2
+import requests
 from urllib import urlencode
 from datetime import datetime
 
@@ -30,37 +30,35 @@ class ZencoderResponseError(Exception):
         self.content = content
 
 class HTTPBackend(object):
-    """
-    Abstracts out an HTTP backend, but defaults to httplib2. Required arguments
-    are `base_url` and `api_key`.
+    """ Abstracts out an HTTP backend. Required argument are `base_url` and 
+    `api_key`. """
+    def __init__(self,
+                 base_url,
+                 api_key,
+                 resource_name=None,
+                 timeout=None,
+                 test=False,
+                 version=None):
 
-    .. note::
-       While `as_xml` is provided as a keyword argument, XML or input or output
-       is not supported.
-    """
-    def __init__(self, base_url, api_key, as_xml=False, resource_name=None, timeout=None, test=False, version=None):
         self.base_url = base_url
+
         if resource_name:
             self.base_url = self.base_url + resource_name
 
-        self.http = httplib2.Http(timeout=timeout)
-        self.as_xml = as_xml
+        self.http = requests.Session()
+
+        self.as_xml = False
         self.api_key = api_key
         self.test = test
         self.version = version
 
-    def content_length(self, body):
-        """
-        Returns the content length as an int for the given `body` data. Used by
-        PUT and POST requests to set the Content-Length header.
-        """
-        return str(len(body)) if body else "0"
+        # sets request headers for the entire session
+        self.http.headers.update(self.headers)
 
     @property
     def headers(self):
-        """ Returns default headers, by setting the Content-Type and Accepts
-        headers.
-        """
+        """ Returns default headers, by setting the Content-Type, Accepts,
+        User-Agent and API Key headers."""
         content_type = 'xml' if self.as_xml else 'json'
 
         headers = {
@@ -85,35 +83,14 @@ class HTTPBackend(object):
         else:
             raise NotImplementedError('Encoding as XML is not supported.')
 
-    def decode(self, raw_body):
-        """
-        Returns the JSON-encoded `raw_body` and decodes it to a `dict` (using
-        `json.loads`).
-
-        .. note::
-           Decoding as XML is not supported.
-        """
-        if not self.as_xml:
-            # only parse json when it exists, else just return None
-            if not raw_body or raw_body == ' ':
-                return None
-            else:
-                return json.loads(raw_body)
-        else:
-            raise NotImplementedError('Decoding as XML is not supported.')
-
     def delete(self, url, params=None):
         """
         Executes an HTTP DELETE request for the given URL
 
-        params should be a urllib.urlencoded string
+        params should be a dictionary
         """
-        if params:
-            url = '?'.join([url, params])
-
-        response, content = self.http.request(url, method="DELETE",
-                                              headers=self.headers)
-        return self.process(response, content)
+        response = self.http.delete(url, params=params)
+        return self.process(response)
 
     def get(self, url, data=None):
         """
@@ -125,66 +102,58 @@ class HTTPBackend(object):
             params = urlencode(data)
             url = '?'.join([url, params])
 
-        response, content = self.http.request(url, method="GET",
-                                              headers=self.headers)
-        return self.process(response, content)
+        response = self.http.get(url, headers=self.headers, params=data)
+        return self.process(response)
 
     def post(self, url, body=None):
         """
         Executes an HTTP POST request for the given URL
         """
-        headers = self.headers
-        headers['Content-Length'] = self.content_length(body)
-        response, content = self.http.request(url, method="POST",
-                                              body=body,
-                                              headers=self.headers)
+        response = self.http.post(url, data=body, headers=self.headers)
 
-        return self.process(response, content)
+        return self.process(response)
 
     def put(self, url, data=None, body=None):
         """
         Executes an HTTP PUT request for the given URL
         """
-        headers = self.headers
-        headers['Content-Length'] = self.content_length(body)
+        response = self.http.put(url, params=data, data=body, headers=self.headers)
 
-        if data:
-            params = urlencode(data)
-            url = '?'.join([url, params])
+        return self.process(response)
 
-        response, content = self.http.request(url, method="PUT",
-                                              body=body,
-                                              headers=headers)
-
-        return self.process(response, content)
-
-    def process(self, http_response, content):
-        """
-        Returns HTTP backend agnostic Response data
-        """
+    def process(self, response):
+        """ Returns HTTP backend agnostic Response data. """
 
         try:
-            code = http_response.status
-            body = self.decode(content)
-            response = Response(code, body, content, http_response)
+            code = response.status_code
 
-            return response
+            # 204 - No Content
+            if code == 204:
+                body = None
+            # add an error message to 402 errors
+            elif code == 402:
+                body = {
+                    "message": "Payment Required",
+                    "status": "error"
+                }
+            else:
+                body = response.json()
 
+            return Response(code, body, response.content, response)
         except ValueError:
-            raise ZencoderResponseError(http_response, content)
+            raise ZencoderResponseError(response, content)
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
     def __init__(self, api_key=None, api_version=None, as_xml=False, timeout=None, test=False):
         """
-        Initializes Zencoder. You must have a valid API_KEY.
+        Initializes Zencoder. You must have a valid `api_key`.
 
         You can pass in the api_key as an argument, or set
         `ZENCODER_API_KEY` as an environment variable, and it will use
-        that, if api_key is unspecified.
+        that, if `api_key` is unspecified.
 
         Set api_version='edge' to get the Zencoder development API. (defaults to 'v2')
-        Set as_xml=True to get back xml data instead of the default json.
         """
         if not api_version:
             api_version = 'v2'
