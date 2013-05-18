@@ -286,6 +286,27 @@ class Output(HTTPBackend):
         """
         return self.get(self.base_url + '/%s' % str(output_id))
 
+class Input(HTTPBackend):
+    """ Returns information regarding inputs """
+    def __init__(self, *args, **kwargs):
+        """
+        Contains all API methods relating to Inputs.
+        """
+        kwargs['resource_name'] = 'inputs'
+        super(Output, self).__init__(*args, **kwargs)
+
+    def progress(self, input_id):
+        """
+        Gets the given input id's progress.
+        """
+        return self.get(self.base_url + '/%s/progress' % str(input_id))
+
+    def details(self, input_id):
+        """
+        Gets the given input id's details
+        """
+        return self.get(self.base_url + '/%s' % str(input))
+
 class Job(HTTPBackend):
     """
     Contains all API methods relating to transcoding Jobs.
