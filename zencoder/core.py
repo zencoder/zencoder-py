@@ -67,13 +67,6 @@ class HTTPBackend(object):
 
         return headers
 
-    def encode(self, data):
-        """
-        Encodes data as JSON (by calling `json.dumps`), so that it can be
-        passed onto the Zencoder API.
-        """
-        return json.dumps(data)
-
     def delete(self, url, params=None):
         """
         Executes an HTTP DELETE request for the given URL
@@ -194,7 +187,7 @@ class Account(HTTPBackend):
         if options:
             data.update(options)
 
-        return self.post(self.base_url, body=self.encode(data))
+        return self.post(self.base_url, body=json.dumps(data))
 
     def details(self):
         """
@@ -262,7 +255,7 @@ class Job(HTTPBackend):
         if options:
             data.update(options)
 
-        return self.post(self.base_url, body=self.encode(data))
+        return self.post(self.base_url, body=json.dumps(data))
 
     def list(self, page=1, per_page=50):
         """
