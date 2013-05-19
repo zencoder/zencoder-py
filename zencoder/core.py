@@ -1,6 +1,5 @@
 import os
 import requests
-from urllib import urlencode
 from datetime import datetime
 
 LIB_VERSION = '0.5.2'
@@ -90,10 +89,6 @@ class HTTPBackend(object):
 
         data should be a dictionary of url parameters
         """
-        if data:
-            params = urlencode(data)
-            url = '?'.join([url, params])
-
         response = self.http.get(url, headers=self.headers, params=data)
         return self.process(response)
 
