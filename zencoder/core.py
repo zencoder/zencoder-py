@@ -47,7 +47,6 @@ class HTTPBackend(object):
 
         self.http = requests.Session()
 
-        self.as_xml = False
         self.api_key = api_key
         self.test = test
         self.version = version
@@ -59,11 +58,10 @@ class HTTPBackend(object):
     def headers(self):
         """ Returns default headers, by setting the Content-Type, Accepts,
         User-Agent and API Key headers."""
-        content_type = 'xml' if self.as_xml else 'json'
 
         headers = {
-            'Content-Type': 'application/{0}'.format(content_type),
-            'Accept': 'application/{0}'.format(content_type),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'Zencoder-Api-Key': self.api_key,
             'User-Agent': 'zencoder-py v{0}'.format(LIB_VERSION)
         }
@@ -74,14 +72,8 @@ class HTTPBackend(object):
         """
         Encodes data as JSON (by calling `json.dumps`), so that it can be
         passed onto the Zencoder API.
-
-        .. note::
-           Encoding as XML is not supported.
         """
-        if not self.as_xml:
-            return json.dumps(data)
-        else:
-            raise NotImplementedError('Encoding as XML is not supported.')
+        return json.dumps(data)
 
     def delete(self, url, params=None):
         """
@@ -145,7 +137,7 @@ class HTTPBackend(object):
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
-    def __init__(self, api_key=None, api_version=None, as_xml=False, timeout=None, test=False):
+    def __init__(self, api_key=None, api_version=None, timeout=None, test=False):
         """
         Initializes Zencoder. You must have a valid `api_key`.
 
@@ -171,9 +163,8 @@ class Zencoder(object):
             self.api_key = api_key
 
         self.test = test
-        self.as_xml = as_xml
 
-        args = (self.base_url, self.api_key, self.as_xml)
+        args = (self.base_url, self.api_key)
         kwargs = dict(timeout=timeout, test=self.test, version=api_version)
         self.job = Job(*args, **kwargs)
         self.account = Account(*args, **kwargs)
@@ -183,10 +174,7 @@ class Zencoder(object):
             self.report = Report(*args, **kwargs)
 
 class Response(object):
-    """
-    The Response object stores the details of an API request in an XML/JSON
-    agnostic way.
-    """
+    """ The Response object stores the details of an API request. """
     def __init__(self, code, body, raw_body, raw_response):
         self.code = code
         self.body = body
@@ -256,13 +244,9 @@ class Output(HTTPBackend):
         return self.get(self.base_url + '/%s' % str(output_id))
 
 class Job(HTTPBackend):
-    """
-    Contains all API methods relating to transcoding Jobs.
-    """
+    """ Contains all API methods relating to transcoding Jobs. """
     def __init__(self, *args, **kwargs):
-        """
-        Initializes a job object
-        """
+        """ Initializes a job object. """
         kwargs['resource_name'] = 'jobs'
         super(Job, self).__init__(*args, **kwargs)
 
