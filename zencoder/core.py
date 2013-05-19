@@ -121,7 +121,7 @@ class HTTPBackend(object):
 
             return Response(code, body, response.content, response)
         except ValueError:
-            raise ZencoderResponseError(response, content)
+            raise ZencoderResponseError(response, response.content)
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
@@ -207,7 +207,6 @@ class Account(HTTPBackend):
         """
         Puts your account into live mode.
         """
-
         return self.put(self.base_url + '/live')
 
 class Output(HTTPBackend):
