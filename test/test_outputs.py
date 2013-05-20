@@ -16,7 +16,7 @@ class TestOutputs(unittest.TestCase):
 
         resp = self.zen.output.details(22222)
         self.assertEquals(resp.code, 200)
-        self.assertGreater(resp.body['id'], 0)
+        self.assertTrue(resp.body['id'] > 0)
 
     @patch("requests.Session.get")
     def test_output_progress(self, get):

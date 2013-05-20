@@ -16,7 +16,7 @@ class TestJobs(unittest.TestCase):
         resp = self.zen.job.create('s3://zencodertesting/test.mov')
 
         self.assertEquals(resp.code, 201)
-        self.assertGreater(resp.body['id'], 0)
+        self.assertTrue(resp.body['id'] > 0)
         self.assertEquals(len(resp.body['outputs']), 1)
 
     @patch("requests.Session.get")
@@ -25,7 +25,7 @@ class TestJobs(unittest.TestCase):
 
         resp = self.zen.job.details(1234)
         self.assertEquals(resp.code, 200)
-        self.assertGreater(resp.body['job']['id'], 0)
+        self.assertTrue(resp.body['job']['id'] > 0)
         self.assertEquals(len(resp.body['job']['output_media_files']), 1)
 
     @patch("requests.Session.get")
