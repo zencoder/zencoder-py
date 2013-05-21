@@ -242,7 +242,7 @@ class Job(HTTPBackend):
         Creates a transcoding job.
 
         @param input: the input url as string
-        @param live_stream: starts an RTMP Live Stream
+        @param live_stream: starts a Live Stream job (input must be None)
         @param outputs: a list of output dictionaries
         @param options: a dictionary of job options
         """
@@ -252,6 +252,9 @@ class Job(HTTPBackend):
 
         if options:
             data.update(options)
+
+        if live_stream:
+            data['live_stream'] = live_stream
 
         return self.post(self.base_url, body=json.dumps(data))
 

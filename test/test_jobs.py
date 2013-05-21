@@ -19,6 +19,16 @@ class TestJobs(unittest.TestCase):
         self.assertTrue(resp.body['id'] > 0)
         self.assertEquals(len(resp.body['outputs']), 1)
 
+    @patch("requests.Session.post")
+    def test_job_create_list(self, post):
+        post.return_value = load_response(201, 'fixtures/job_create_live.json')
+
+        resp = self.zen.job.create(live_stream=True)
+
+        self.assertEquals(resp.code, 201)
+        self.assertTrue(resp.body['id'] > 0)
+        self.assertEquals(len(resp.body['outputs']), 1)
+
     @patch("requests.Session.get")
     def test_job_details(self, get):
         get.return_value = load_response(200, 'fixtures/job_details.json')
