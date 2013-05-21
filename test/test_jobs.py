@@ -68,6 +68,13 @@ class TestJobs(unittest.TestCase):
         self.assertEquals(resp.code, 200)
         self.assertEquals(len(resp.body), 1)
 
+    @patch("requests.Session.put")
+    def test_job_finish(self, put):
+        put.return_value = load_response(204)
+
+        resp = self.zen.job.finish(99999)
+        self.assertEquals(resp.code, 204)
+
 if __name__ == "__main__":
     unittest.main()
 
