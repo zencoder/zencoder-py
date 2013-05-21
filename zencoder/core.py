@@ -2,8 +2,6 @@ import os
 import requests
 from datetime import datetime
 
-LIB_VERSION = '0.5.2'
-
 # Note: I've seen this pattern for dealing with json in different versions of
 # python in a lot of modules -- if there's a better way, I'd love to use it.
 try:
@@ -19,6 +17,8 @@ except ImportError:
         # use this as a last resort
         from django.utils import simplejson
         json = simplejson
+
+__version__ = '0.5.2'
 
 class ZencoderError(Exception):
     pass
@@ -62,7 +62,7 @@ class HTTPBackend(object):
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Zencoder-Api-Key': self.api_key,
-            'User-Agent': 'zencoder-py v{0}'.format(LIB_VERSION)
+            'User-Agent': 'zencoder-py v{0}'.format(__version__)
         }
 
         return headers
@@ -237,17 +237,16 @@ class Job(HTTPBackend):
         kwargs['resource_name'] = 'jobs'
         super(Job, self).__init__(*args, **kwargs)
 
-    def create(self, input, outputs=None, options=None):
+    def create(self, input=None, live_stream=False, outputs=None, options=None):
         """
-        Creates a job
+        Creates a transcoding job.
 
         @param input: the input url as string
+        @param live_stream: starts an RTMP Live Stream
         @param outputs: a list of output dictionaries
         @param options: a dictionary of job options
         """
-        as_test = int(self.test)
-
-        data = {"input": input, "test": as_test}
+        data = {"input": input, "test": self.test}
         if outputs:
             data['outputs'] = outputs
 
@@ -304,6 +303,10 @@ class Job(HTTPBackend):
         """
         return self.cancel(job_id)
 
+    def finish(self, job_id):
+        """ Finishes the live stream for `job_id`. """
+        return self.put(self.base_url + '/%s/finish' % str(job_id))
+
 class Report(HTTPBackend):
     def __init__(self, *args, **kwargs):
         """
@@ -344,3 +347,4 @@ class Report(HTTPBackend):
 
         url = self.base_url + '/minutes'
         return self.get(url, data=data)
+
