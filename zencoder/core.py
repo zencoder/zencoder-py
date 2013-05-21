@@ -1,9 +1,6 @@
 import os
-import httplib2
-from urllib import urlencode
+import requests
 from datetime import datetime
-
-LIB_VERSION = '0.5.2'
 
 # Note: I've seen this pattern for dealing with json in different versions of
 # python in a lot of modules -- if there's a better way, I'd love to use it.
@@ -21,6 +18,8 @@ except ImportError:
         from django.utils import simplejson
         json = simplejson
 
+__version__ = '0.5.2'
+
 class ZencoderError(Exception):
     pass
 
@@ -30,90 +29,52 @@ class ZencoderResponseError(Exception):
         self.content = content
 
 class HTTPBackend(object):
-    """
-    Abstracts out an HTTP backend, but defaults to httplib2. Required arguments
-    are `base_url` and `api_key`.
+    """ Abstracts out an HTTP backend. Required argument are `base_url` and 
+    `api_key`. """
+    def __init__(self,
+                 base_url,
+                 api_key,
+                 resource_name=None,
+                 timeout=None,
+                 test=False,
+                 version=None):
 
-    .. note::
-       While `as_xml` is provided as a keyword argument, XML or input or output
-       is not supported.
-    """
-    def __init__(self, base_url, api_key, as_xml=False, resource_name=None, timeout=None, test=False, version=None):
         self.base_url = base_url
+
         if resource_name:
             self.base_url = self.base_url + resource_name
 
-        self.http = httplib2.Http(timeout=timeout)
-        self.as_xml = as_xml
+        self.http = requests.Session()
+
         self.api_key = api_key
         self.test = test
         self.version = version
 
-    def content_length(self, body):
-        """
-        Returns the content length as an int for the given `body` data. Used by
-        PUT and POST requests to set the Content-Length header.
-        """
-        return str(len(body)) if body else "0"
+        # sets request headers for the entire session
+        self.http.headers.update(self.headers)
 
     @property
     def headers(self):
-        """ Returns default headers, by setting the Content-Type and Accepts
-        headers.
-        """
-        content_type = 'xml' if self.as_xml else 'json'
+        """ Returns default headers, by setting the Content-Type, Accepts,
+        User-Agent and API Key headers."""
 
         headers = {
-            'Content-Type': 'application/{0}'.format(content_type),
-            'Accept': 'application/{0}'.format(content_type),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'Zencoder-Api-Key': self.api_key,
-            'User-Agent': 'zencoder-py v{0}'.format(LIB_VERSION)
+            'User-Agent': 'zencoder-py v{0}'.format(__version__)
         }
 
         return headers
-
-    def encode(self, data):
-        """
-        Encodes data as JSON (by calling `json.dumps`), so that it can be
-        passed onto the Zencoder API.
-
-        .. note::
-           Encoding as XML is not supported.
-        """
-        if not self.as_xml:
-            return json.dumps(data)
-        else:
-            raise NotImplementedError('Encoding as XML is not supported.')
-
-    def decode(self, raw_body):
-        """
-        Returns the JSON-encoded `raw_body` and decodes it to a `dict` (using
-        `json.loads`).
-
-        .. note::
-           Decoding as XML is not supported.
-        """
-        if not self.as_xml:
-            # only parse json when it exists, else just return None
-            if not raw_body or raw_body == ' ':
-                return None
-            else:
-                return json.loads(raw_body)
-        else:
-            raise NotImplementedError('Decoding as XML is not supported.')
 
     def delete(self, url, params=None):
         """
         Executes an HTTP DELETE request for the given URL
 
-        params should be a urllib.urlencoded string
+        params should be a dictionary
         """
-        if params:
-            url = '?'.join([url, params])
-
-        response, content = self.http.request(url, method="DELETE",
-                                              headers=self.headers)
-        return self.process(response, content)
+        response = self.http.delete(url, params=params)
+        return self.process(response)
 
     def get(self, url, data=None):
         """
@@ -121,70 +82,58 @@ class HTTPBackend(object):
 
         data should be a dictionary of url parameters
         """
-        if data:
-            params = urlencode(data)
-            url = '?'.join([url, params])
-
-        response, content = self.http.request(url, method="GET",
-                                              headers=self.headers)
-        return self.process(response, content)
+        response = self.http.get(url, headers=self.headers, params=data)
+        return self.process(response)
 
     def post(self, url, body=None):
         """
         Executes an HTTP POST request for the given URL
         """
-        headers = self.headers
-        headers['Content-Length'] = self.content_length(body)
-        response, content = self.http.request(url, method="POST",
-                                              body=body,
-                                              headers=self.headers)
+        response = self.http.post(url, data=body, headers=self.headers)
 
-        return self.process(response, content)
+        return self.process(response)
 
     def put(self, url, data=None, body=None):
         """
         Executes an HTTP PUT request for the given URL
         """
-        headers = self.headers
-        headers['Content-Length'] = self.content_length(body)
+        response = self.http.put(url, params=data, data=body, headers=self.headers)
 
-        if data:
-            params = urlencode(data)
-            url = '?'.join([url, params])
+        return self.process(response)
 
-        response, content = self.http.request(url, method="PUT",
-                                              body=body,
-                                              headers=headers)
-
-        return self.process(response, content)
-
-    def process(self, http_response, content):
-        """
-        Returns HTTP backend agnostic Response data
-        """
+    def process(self, response):
+        """ Returns HTTP backend agnostic Response data. """
 
         try:
-            code = http_response.status
-            body = self.decode(content)
-            response = Response(code, body, content, http_response)
+            code = response.status_code
 
-            return response
+            # 204 - No Content
+            if code == 204:
+                body = None
+            # add an error message to 402 errors
+            elif code == 402:
+                body = {
+                    "message": "Payment Required",
+                    "status": "error"
+                }
+            else:
+                body = response.json()
 
+            return Response(code, body, response.content, response)
         except ValueError:
-            raise ZencoderResponseError(http_response, content)
+            raise ZencoderResponseError(response, response.content)
 
 class Zencoder(object):
     """ This is the entry point to the Zencoder API """
-    def __init__(self, api_key=None, api_version=None, as_xml=False, timeout=None, test=False):
+    def __init__(self, api_key=None, api_version=None, timeout=None, test=False):
         """
-        Initializes Zencoder. You must have a valid API_KEY.
+        Initializes Zencoder. You must have a valid `api_key`.
 
         You can pass in the api_key as an argument, or set
         `ZENCODER_API_KEY` as an environment variable, and it will use
-        that, if api_key is unspecified.
+        that, if `api_key` is unspecified.
 
         Set api_version='edge' to get the Zencoder development API. (defaults to 'v2')
-        Set as_xml=True to get back xml data instead of the default json.
         """
         if not api_version:
             api_version = 'v2'
@@ -202,9 +151,8 @@ class Zencoder(object):
             self.api_key = api_key
 
         self.test = test
-        self.as_xml = as_xml
 
-        args = (self.base_url, self.api_key, self.as_xml)
+        args = (self.base_url, self.api_key)
         kwargs = dict(timeout=timeout, test=self.test, version=api_version)
         self.job = Job(*args, **kwargs)
         self.account = Account(*args, **kwargs)
@@ -214,10 +162,7 @@ class Zencoder(object):
             self.report = Report(*args, **kwargs)
 
 class Response(object):
-    """
-    The Response object stores the details of an API request in an XML/JSON
-    agnostic way.
-    """
+    """ The Response object stores the details of an API request. """
     def __init__(self, code, body, raw_body, raw_response):
         self.code = code
         self.body = body
@@ -242,7 +187,7 @@ class Account(HTTPBackend):
         if options:
             data.update(options)
 
-        return self.post(self.base_url, body=self.encode(data))
+        return self.post(self.base_url, body=json.dumps(data))
 
     def details(self):
         """
@@ -262,7 +207,6 @@ class Account(HTTPBackend):
         """
         Puts your account into live mode.
         """
-
         return self.put(self.base_url + '/live')
 
 class Output(HTTPBackend):
@@ -308,34 +252,32 @@ class Input(HTTPBackend):
         return self.get(self.base_url + '/%s' % str(input))
 
 class Job(HTTPBackend):
-    """
-    Contains all API methods relating to transcoding Jobs.
-    """
+    """ Contains all API methods relating to transcoding Jobs. """
     def __init__(self, *args, **kwargs):
-        """
-        Initializes a job object
-        """
+        """ Initializes a job object. """
         kwargs['resource_name'] = 'jobs'
         super(Job, self).__init__(*args, **kwargs)
 
-    def create(self, input, outputs=None, options=None):
+    def create(self, input=None, live_stream=False, outputs=None, options=None):
         """
-        Creates a job
+        Creates a transcoding job.
 
         @param input: the input url as string
+        @param live_stream: starts a Live Stream job (input must be None)
         @param outputs: a list of output dictionaries
         @param options: a dictionary of job options
         """
-        as_test = int(self.test)
-
-        data = {"input": input, "test": as_test}
+        data = {"input": input, "test": self.test}
         if outputs:
             data['outputs'] = outputs
 
         if options:
             data.update(options)
 
-        return self.post(self.base_url, body=self.encode(data))
+        if live_stream:
+            data['live_stream'] = live_stream
+
+        return self.post(self.base_url, body=json.dumps(data))
 
     def list(self, page=1, per_page=50):
         """
@@ -385,6 +327,10 @@ class Job(HTTPBackend):
         """
         return self.cancel(job_id)
 
+    def finish(self, job_id):
+        """ Finishes the live stream for `job_id`. """
+        return self.put(self.base_url + '/%s/finish' % str(job_id))
+
 class Report(HTTPBackend):
     def __init__(self, *args, **kwargs):
         """
@@ -425,3 +371,4 @@ class Report(HTTPBackend):
 
         url = self.base_url + '/minutes'
         return self.get(url, data=data)
+

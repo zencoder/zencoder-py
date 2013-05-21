@@ -1,12 +1,15 @@
 # Zencoder
+[![Build Status](https://secure.travis-ci.org/schworer/zencoder-py.png)](http://travis-ci.org/schworer/zencoder-py)
 
 A Python module for the [Zencoder](http://zencoder.com) API.
 
 ## Installation
 Install from PyPI using `easy_install` or `pip`.
 
+    pip install zencoder
+
 ## Dependencies
-`zencoder-py` depends on [httplib2](http://code.google.com/p/httplib2/), and uses the `json` or `simplejson` module.
+`zencoder-py` depends on [requests](http://python-requests.org), and uses the `json` or `simplejson` module.
 
 ## Usage
 
@@ -60,5 +63,4 @@ Docs are in progress, and hosted at Read the Docs: http://zencoder.rtfd.org
  * [Josh Kennedy](http://github.com/kennedyj)
  * [Issac Kelly](http://github.com/issackelly)
 
-[![Build Status](https://secure.travis-ci.org/schworer/zencoder-py.png)](http://travis-ci.org/schworer/zencoder-py)
 
