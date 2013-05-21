@@ -1,0 +1,12 @@
+{
+  "stream_url": "rtmp://foo:1935/live",
+  "stream_name": "bar",
+  "outputs": [
+    {
+      "label": null,
+      "url": "https://zencoder-temp-storage-us-east-1.s3.amazonaws.com",
+      "id": 97931084
+    }
+  ],
+  "id": 47010105
+}

@@ -1,0 +1,20 @@
+{
+      "audio_bitrate_in_kbps": 74,
+      "audio_codec": "aac",
+      "audio_sample_rate": 48000,
+      "channels": "2",
+      "duration_in_ms": 24892,
+      "file_size_in_bytes": 1215110,
+      "format": "mpeg4",
+      "frame_rate": 29.97,
+      "height": 352,
+      "id": 13339,
+      "label": null,
+      "state": "finished",
+      "total_bitrate_in_kbps": 387,
+      "url": "https://example.com/file.mp4",
+      "video_bitrate_in_kbps": 313,
+      "video_codec": "h264",
+      "width": 624,
+      "md5_checksum": "7f106918e02a69466afa0ee014174143"
+}
