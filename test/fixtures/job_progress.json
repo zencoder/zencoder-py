@@ -1,0 +1,17 @@
+{
+  "state": "processing",
+  "input": {
+    "state": "finished",
+    "id": 45474984
+  },
+  "progress": 40.5,
+  "outputs": [
+    {
+      "state": "processing",
+      "id": 93474209,
+      "current_event_progress": 0,
+      "progress": 15,
+      "current_event": "Transcoding"
+    }
+  ]
+}
