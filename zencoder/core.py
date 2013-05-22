@@ -157,6 +157,7 @@ class Zencoder(object):
         self.job = Job(*args, **kwargs)
         self.account = Account(*args, **kwargs)
         self.output = Output(*args, **kwargs)
+        self.input = Input(*args, **kwargs)
         self.report = None
         if api_version == 'v2':
             self.report = Report(*args, **kwargs)
@@ -229,6 +230,27 @@ class Output(HTTPBackend):
         Gets the given output id's details
         """
         return self.get(self.base_url + '/%s' % str(output_id))
+
+class Input(HTTPBackend):
+    """ Returns information regarding inputs """
+    def __init__(self, *args, **kwargs):
+        """
+        Contains all API methods relating to Inputs.
+        """
+        kwargs['resource_name'] = 'inputs'
+        super(Input, self).__init__(*args, **kwargs)
+
+    def progress(self, input_id):
+        """
+        Gets the given input id's progress.
+        """
+        return self.get(self.base_url + '/%s/progress' % str(input_id))
+
+    def details(self, input_id):
+        """
+        Gets the given input id's details
+        """
+        return self.get(self.base_url + '/%s' % str(input))
 
 class Job(HTTPBackend):
     """ Contains all API methods relating to transcoding Jobs. """
