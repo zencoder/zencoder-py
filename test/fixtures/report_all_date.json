@@ -1,0 +1,38 @@
+{
+    "statistics": {
+        "vod": [
+            {
+                "encoded_minutes": 5,
+                "billable_minutes": 0,
+                "grouping": null,
+                "collected_on": "2013-05-13"
+            }
+        ],
+        "live": [
+            {
+                "total_billable_hours": 2,
+                "stream_hours": 1,
+                "billable_stream_hours": 0,
+                "encoded_hours": 2,
+                "grouping": null,
+                "collected_on": "2013-05-13",
+                "billable_encoded_hours": 0,
+                "total_hours": 2
+            }
+        ]
+    },
+    "total": {
+        "vod": {
+            "encoded_minutes": 5,
+            "billable_minutes": 0
+        },
+        "live": {
+            "total_billable_hours": 2,
+            "stream_hours": 1,
+            "billable_stream_hours": 0,
+            "encoded_hours": 2,
+            "billable_encoded_hours": 0,
+            "total_hours": 2
+        }
+    }
+}
