@@ -1,0 +1,20 @@
+{
+      "audio_sample_rate": 44100,
+      "frame_rate": 30,
+      "job_id": 45497494,
+      "channels": "2",
+      "audio_bitrate_in_kbps": 50,
+      "height": 720,
+      "audio_codec": "aac",
+      "duration_in_ms": 5067,
+      "url": "http://s3.amazonaws.com/zencodertesting/test.mov",
+      "file_size_in_bytes": 922620,
+      "width": 1280,
+      "format": "mpeg4",
+      "state": "finished",
+      "total_bitrate_in_kbps": 1452,
+      "video_bitrate_in_kbps": 1402,
+      "id": 45475483,
+      "video_codec": "h264",
+      "privacy": false
+}
