@@ -345,10 +345,10 @@ class Report(HTTPBackend):
 
         date_format = '%Y-%m-%d'
         if start_date:
-            data['from'] = datetime.strftime(start_date, date_format)
+            data['from'] = start_date.strftime(date_format)
 
         if end_date:
-            data['to'] = datetime.strftime(end_date, date_format)
+            data['to'] = end_date.strftime(date_format)
 
         if grouping:
             data['grouping'] = grouping
