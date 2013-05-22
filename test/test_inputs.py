@@ -14,7 +14,7 @@ class TestInputs(unittest.TestCase):
     def test_input_details(self, get):
         get.return_value = load_response(200, 'fixtures/input_details.json')
 
-        resp = self.zen.output.details(15432)
+        resp = self.zen.input.details(15432)
         self.assertEquals(resp.code, 200)
         self.assertTrue(resp.body['id'] > 0)
 
@@ -22,7 +22,7 @@ class TestInputs(unittest.TestCase):
     def test_input_progress(self, get):
         get.return_value = load_response(200, 'fixtures/input_progress.json')
 
-        resp = self.zen.output.progress(14325)
+        resp = self.zen.input.progress(14325)
         self.assertEquals(resp.code, 200)
         self.assertEquals(resp.body['state'], 'processing')
 

@@ -157,6 +157,7 @@ class Zencoder(object):
         self.job = Job(*args, **kwargs)
         self.account = Account(*args, **kwargs)
         self.output = Output(*args, **kwargs)
+        self.input = Input(*args, **kwargs)
         self.report = None
         if api_version == 'v2':
             self.report = Report(*args, **kwargs)
@@ -237,7 +238,7 @@ class Input(HTTPBackend):
         Contains all API methods relating to Inputs.
         """
         kwargs['resource_name'] = 'inputs'
-        super(Output, self).__init__(*args, **kwargs)
+        super(Input, self).__init__(*args, **kwargs)
 
     def progress(self, input_id):
         """
