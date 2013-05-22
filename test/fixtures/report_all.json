@@ -1,0 +1,17 @@
+{
+  "total": {
+      "live": {
+        "encoded_hours": 5,
+        "stream_hours": 5
+      },
+      "vod": {
+        "encoded_minutes": 6,
+        "billable_minutes": 8
+      }
+  },
+  "statistics": {
+    "live": {
+        "length": 2
+    }
+  }
+}

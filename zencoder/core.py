@@ -340,6 +340,21 @@ class Report(HTTPBackend):
         kwargs['resource_name'] = 'reports'
         super(Report, self).__init__(*args, **kwargs)
 
+    def __format(self, start_date=None, end_date=None, grouping=None):
+        data = {'api_key': self.api_key}
+
+        date_format = '%Y-%m-%d'
+        if start_date:
+            data['from'] = datetime.strftime(start_date, date_format)
+
+        if end_date:
+            data['to'] = datetime.strftime(end_date, date_format)
+
+        if grouping:
+            data['grouping'] = grouping
+
+        return data
+
     def minutes(self, start_date=None, end_date=None, grouping=None):
         """
         Gets a detailed Report of encoded minutes and billable minutes for a 
@@ -359,17 +374,30 @@ class Report(HTTPBackend):
             yesterday)
         @param grouping: Minute usage for only one report grouping
         """
-        data = {'api_key': self.api_key}
-        date_format = '%Y-%m-%d'
-        if start_date:
-            data['from'] = datetime.strftime(start_date, date_format)
 
-        if end_date:
-            data['to'] = datetime.strftime(end_date, date_format)
-
-        if grouping:
-            data['grouping'] = grouping
+        data = self.__format(start_date, end_date)
 
         url = self.base_url + '/minutes'
+        return self.get(url, data=data)
+
+    def vod(self, start_date=None, end_date=None, grouping=None):
+        """ Gets a report of VOD Usage """
+        data = self.__format(start_date, end_date, grouping)
+
+        url = self.base_url + '/vod'
+        return self.get(url, data=data)
+
+    def live(self, start_date=None, end_date=None, grouping=None):
+        """ Gets a report of Live Usage """
+        data = self.__format(start_date, end_date, grouping)
+
+        url = self.base_url + '/live'
+        return self.get(url, data=data)
+
+    def all(self, start_date=None, end_date=None, grouping=None):
+        """ Gets a report of both VOD and Live Usage """
+        data = self.__format(start_date, end_date, grouping)
+
+        url = self.base_url + '/all'
         return self.get(url, data=data)
 
