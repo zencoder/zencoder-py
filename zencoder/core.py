@@ -18,7 +18,7 @@ except ImportError:
         from django.utils import simplejson
         json = simplejson
 
-__version__ = '0.5.2'
+__version__ = '0.6.3'
 
 class ZencoderError(Exception):
     pass
