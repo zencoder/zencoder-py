@@ -29,8 +29,8 @@ class ZencoderResponseError(Exception):
         self.content = content
 
 class HTTPBackend(object):
-    """ Abstracts out an HTTP backend. Required argument are `base_url` and 
-    `api_key`. """
+    """ Abstracts out an HTTP backend. Required argument are ``base_url`` and
+    ``api_key``. """
     def __init__(self,
                  base_url,
                  api_key,
@@ -56,7 +56,7 @@ class HTTPBackend(object):
     @property
     def headers(self):
         """ Returns default headers, by setting the Content-Type, Accepts,
-        User-Agent and API Key headers."""
+        User-Agent and API Key headers. """
 
         headers = {
             'Content-Type': 'application/json',
@@ -68,41 +68,35 @@ class HTTPBackend(object):
         return headers
 
     def delete(self, url, params=None):
-        """
-        Executes an HTTP DELETE request for the given URL
+        """ Executes an HTTP DELETE request for the given URL.
 
-        params should be a dictionary
+            ``params`` should be a dictionary
         """
         response = self.http.delete(url, params=params)
         return self.process(response)
 
     def get(self, url, data=None):
-        """
-        Executes an HTTP GET request for the given URL
+        """ Executes an HTTP GET request for the given URL.
 
-        data should be a dictionary of url parameters
+            ``data`` should be a dictionary of url parameters
         """
         response = self.http.get(url, headers=self.headers, params=data)
         return self.process(response)
 
     def post(self, url, body=None):
-        """
-        Executes an HTTP POST request for the given URL
-        """
+        """ Executes an HTTP POST request for the given URL. """
         response = self.http.post(url, data=body, headers=self.headers)
 
         return self.process(response)
 
     def put(self, url, data=None, body=None):
-        """
-        Executes an HTTP PUT request for the given URL
-        """
+        """ Executes an HTTP PUT request for the given URL. """
         response = self.http.put(url, params=data, data=body, headers=self.headers)
 
         return self.process(response)
 
     def process(self, response):
-        """ Returns HTTP backend agnostic Response data. """
+        """ Returns HTTP backend agnostic ``Response`` data. """
 
         try:
             code = response.status_code
@@ -124,17 +118,17 @@ class HTTPBackend(object):
             raise ZencoderResponseError(response, response.content)
 
 class Zencoder(object):
-    """ This is the entry point to the Zencoder API """
+    """ This is the entry point to the Zencoder API. You must have a valid
+    ``api_key``.
+
+    You can pass in the api_key as an argument, or set ``ZENCODER_API_KEY``
+    as an environment variable, and it will use that, if ``api_key`` is
+    unspecified.
+
+    Set ``api_version='edge'`` to get the Zencoder development API.
+    (defaults to 'v2')
+    """
     def __init__(self, api_key=None, api_version=None, timeout=None, test=False):
-        """
-        Initializes Zencoder. You must have a valid `api_key`.
-
-        You can pass in the api_key as an argument, or set
-        `ZENCODER_API_KEY` as an environment variable, and it will use
-        that, if `api_key` is unspecified.
-
-        Set api_version='edge' to get the Zencoder development API. (defaults to 'v2')
-        """
         if not api_version:
             api_version = 'v2'
 
@@ -163,7 +157,10 @@ class Zencoder(object):
             self.report = Report(*args, **kwargs)
 
 class Response(object):
-    """ The Response object stores the details of an API request. """
+    """ The Response object stores the details of an API request.
+
+    `Response.body` contains the loaded JSON response from the API.
+    """
     def __init__(self, code, body, raw_body, raw_response):
         self.code = code
         self.body = body
@@ -171,17 +168,20 @@ class Response(object):
         self.raw_response = raw_response
 
 class Account(HTTPBackend):
-    """ Account object """
+    """ Contains all API methods relating to Accounts.
+
+    https://app.zencoder.com/docs/api/inputs
+
+    """
     def __init__(self, *args, **kwargs):
-        """
-        Initializes an Account object
-        """
         kwargs['resource_name'] = 'account'
         super(Account, self).__init__(*args, **kwargs)
 
     def create(self, email, tos=1, options=None):
-        """
-        Creates an account with Zencoder, no API Key necessary.
+        """ Creates an account with Zencoder, no API Key necessary.
+
+        https://app.zencoder.com/docs/api/accounts/create
+
         """
         data = {'email': email,
                 'terms_of_service': str(tos)}
@@ -191,82 +191,101 @@ class Account(HTTPBackend):
         return self.post(self.base_url, body=json.dumps(data))
 
     def details(self):
-        """
-        Gets your account details.
-        """
+        """ Gets account details.
 
+        https://app.zencoder.com/docs/api/accounts/show
+
+        """
         return self.get(self.base_url)
 
     def integration(self):
-        """
-        Puts your account into integration mode.
-        """
+        """ Puts the account into integration mode.
 
+        https://app.zencoder.com/docs/api/accounts/integration
+
+        """
         return self.put(self.base_url + '/integration')
 
     def live(self):
-        """
-        Puts your account into live mode.
+        """ Puts the account into live mode.
+
+        https://app.zencoder.com/docs/api/accounts/integration
+
         """
         return self.put(self.base_url + '/live')
 
 class Output(HTTPBackend):
-    """ Gets information regarding outputs """
+    """ Contains all API methods relating to Outputs.
+
+    https://app.zencoder.com/docs/api/outputs
+
+    """
     def __init__(self, *args, **kwargs):
-        """
-        Contains all API methods relating to Outputs.
-        """
         kwargs['resource_name'] = 'outputs'
         super(Output, self).__init__(*args, **kwargs)
 
     def progress(self, output_id):
-        """
-        Gets the given output id's progress.
+        """ Returns the progress for the given ``output_id``.
+
+        https://app.zencoder.com/docs/api/outputs/progress
+
         """
         return self.get(self.base_url + '/%s/progress' % str(output_id))
 
     def details(self, output_id):
-        """
-        Gets the given output id's details
+        """ Returns the details of the given ``output_id``.
+
+        https://app.zencoder.com/docs/api/outputs/show
+
         """
         return self.get(self.base_url + '/%s' % str(output_id))
 
 class Input(HTTPBackend):
-    """ Returns information regarding inputs """
+    """ Contains all API methods relating to Inputs.
+
+    https://app.zencoder.com/docs/api/inputs
+
+    """
     def __init__(self, *args, **kwargs):
-        """
-        Contains all API methods relating to Inputs.
-        """
         kwargs['resource_name'] = 'inputs'
         super(Input, self).__init__(*args, **kwargs)
 
     def progress(self, input_id):
-        """
-        Gets the given input id's progress.
+        """ Returns the progress of the given ``input_id``.
+
+        https://app.zencoder.com/docs/api/inputs/progress
+
         """
         return self.get(self.base_url + '/%s/progress' % str(input_id))
 
     def details(self, input_id):
-        """
-        Gets the given input id's details
+        """ Returns the detials of the given ``input_id``.
+
+        https://app.zencoder.com/docs/api/inputs/show
+
         """
         return self.get(self.base_url + '/%s' % str(input))
 
 class Job(HTTPBackend):
-    """ Contains all API methods relating to transcoding Jobs. """
+    """ Contains all API methods relating to transcoding Jobs.
+
+    https://app.zencoder.com/docs/api/jobs
+
+    """
     def __init__(self, *args, **kwargs):
-        """ Initializes a job object. """
         kwargs['resource_name'] = 'jobs'
         super(Job, self).__init__(*args, **kwargs)
 
     def create(self, input=None, live_stream=False, outputs=None, options=None):
-        """
-        Creates a transcoding job.
+        """ Creates a transcoding job. Here are some examples::
 
-        @param input: the input url as string
-        @param live_stream: starts a Live Stream job (input must be None)
-        @param outputs: a list of output dictionaries
-        @param options: a dictionary of job options
+            job.create('s3://zencodertesting/test.mov')
+            job.create(live_stream=True)
+            job.create(input='http://example.com/input.mov',
+                       outputs=({'label': 'test output'},))
+
+        https://app.zencoder.com/docs/api/jobs/create
+
         """
         data = {"input": input, "test": self.test}
         if outputs:
@@ -281,35 +300,45 @@ class Job(HTTPBackend):
         return self.post(self.base_url, body=json.dumps(data))
 
     def list(self, page=1, per_page=50):
-        """
-        Lists some jobs.
+        """ Lists Jobs.
 
-        @param page: <int> the page of results to return
-        @param per_page: <int> the number of results per page
+        https://app.zencoder.com/docs/api/jobs/list
+
         """
         data = {"page": page,
                 "per_page": per_page}
         return self.get(self.base_url, data=data)
 
     def details(self, job_id):
-        """
-        Gets details for the given job
+        """ Returns details of the given ``job_id``.
+
+        https://app.zencoder.com/docs/api/jobs/show
+
         """
         return self.get(self.base_url + '/%s' % str(job_id))
 
     def progress(self, job_id):
+        """ Returns the progress of the given ``job_id``.
+
+        https://app.zencoder.com/docs/api/jobs/progress
+
+        """
         return self.get(self.base_url + '/%s/progress' % str(job_id))
 
     def resubmit(self, job_id):
-        """
-        Resubmits the given `job_id`
+        """ Resubmits the given ``job_id``.
+
+        https://app.zencoder.com/docs/api/jobs/resubmit
+
         """
         url = self.base_url + '/%s/resubmit' % str(job_id)
         return self.put(url)
 
     def cancel(self, job_id):
-        """
-        Cancels the given `job_id`
+        """ Cancels the given ``job_id``.
+
+        https://app.zencoder.com/docs/api/jobs/cancel
+
         """
         if self.version == 'v1':
             verb = self.get
@@ -320,8 +349,7 @@ class Job(HTTPBackend):
         return verb(url)
 
     def delete(self, job_id):
-        """
-        Deletes the given `job_id`
+        """ Deletes the given ``job_id``.
 
         WARNING: This method is aliased to `Job.cancel` -- it is deprecated in
                  API version 2 and greater.
@@ -329,13 +357,19 @@ class Job(HTTPBackend):
         return self.cancel(job_id)
 
     def finish(self, job_id):
-        """ Finishes the live stream for `job_id`. """
+        """ Finishes the live stream for ``job_id``.
+
+        https://app.zencoder.com/docs/api/jobs/finish
+
+        """
         return self.put(self.base_url + '/%s/finish' % str(job_id))
 
 class Report(HTTPBackend):
     def __init__(self, *args, **kwargs):
-        """
-        Contains all API methods relating to Reports.
+        """ Contains all API methods relating to Reports.
+
+            https://app.zencoder.com/docs/api/reports
+
         """
         kwargs['resource_name'] = 'reports'
         super(Report, self).__init__(*args, **kwargs)
@@ -356,23 +390,20 @@ class Report(HTTPBackend):
         return data
 
     def minutes(self, start_date=None, end_date=None, grouping=None):
-        """
-        Gets a detailed Report of encoded minutes and billable minutes for a 
+        """ Gets a detailed Report of encoded minutes and billable minutes for a
         date range.
 
-        **Warning**: `start_date` and `end_date` must be `datetime.date` objects.
+        **Warning**: ``start_date`` and ``end_date`` must be ``datetime.date`` objects.
 
-        Example:
+        Example::
             import datetime
             start = datetime.date(2012, 12, 31)
             end = datetime.today()
             data = z.report.minutes(start, end)
 
-        @param start_date: Start date of report (If not submitted,
-            API defaults to 30 days ago)
-        @param end_date: End date of report (If not submitted, API defaults to
-            yesterday)
-        @param grouping: Minute usage for only one report grouping
+
+        https://app.zencoder.com/docs/api/reports/minutes
+
         """
 
         data = self.__format(start_date, end_date)
@@ -381,21 +412,33 @@ class Report(HTTPBackend):
         return self.get(url, data=data)
 
     def vod(self, start_date=None, end_date=None, grouping=None):
-        """ Gets a report of VOD Usage """
+        """ Returns a report of VOD usage.
+
+         https://app.zencoder.com/docs/api/reports/vod
+
+        """
         data = self.__format(start_date, end_date, grouping)
 
         url = self.base_url + '/vod'
         return self.get(url, data=data)
 
     def live(self, start_date=None, end_date=None, grouping=None):
-        """ Gets a report of Live Usage """
+        """ Returns a report of Live usage.
+
+        https://app.zencoder.com/docs/api/reports/vod
+
+        """
         data = self.__format(start_date, end_date, grouping)
 
         url = self.base_url + '/live'
         return self.get(url, data=data)
 
     def all(self, start_date=None, end_date=None, grouping=None):
-        """ Gets a report of both VOD and Live Usage """
+        """ Returns a report of both VOD and Live usage.
+
+        https://app.zencoder.com/docs/api/reports/all
+
+        """
         data = self.__format(start_date, end_date, grouping)
 
         url = self.base_url + '/all'

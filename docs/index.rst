@@ -15,10 +15,10 @@ Contents:
    zencoder
 
 Introduction:
-`zencoder` is a Python module for the Zencoder_ API
 
-Source is hosted at github: http://github.com/schworer/zencoder-py
+`zencoder` is a Python module for the Zencoder API_. For Zencoder guides and API documentation, check out the official Zencoder docs here_.
 
+Source is hosted at github: http://github.com/zencoder/zencoder-py
 
 Indices and tables
 ==================
@@ -27,5 +27,6 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. _Zencoder: http://zencoder.com/api
+.. _Zencoder API: https://app.zencoder.com/docs
+.. _here: https://app.zencoder.com/docs
 
