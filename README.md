@@ -1,5 +1,5 @@
 # Zencoder
-[![Build Status](https://secure.travis-ci.org/schworer/zencoder-py.png)](http://travis-ci.org/schworer/zencoder-py)
+[![Build Status](https://travis-ci.org/zencoder/zencoder-py.png?branch=master)](https://travis-ci.org/zencoder/zencoder-py)
 
 A Python module for the [Zencoder](http://zencoder.com) API.
 
