@@ -37,7 +37,10 @@ class HTTPBackend(object):
                  resource_name=None,
                  timeout=None,
                  test=False,
-                 version=None):
+                 version=None,
+                 proxies=None,
+                 cert=None,
+                 http_timeout=None):
 
         self.base_url = base_url
 
@@ -45,6 +48,11 @@ class HTTPBackend(object):
             self.base_url = self.base_url + resource_name
 
         self.http = requests.Session()
+
+        # set requests additional settings. `None` is default for all of these settings
+        self.http.timeout = http_timeout
+        self.http.proxies = proxies
+        self.http.cert = cert
 
         self.api_key = api_key
         self.test = test
