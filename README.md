@@ -55,6 +55,13 @@ zen = Zencoder(api_version='v1')
 # set to the edge version: https://app.zencoder.com/api/
 zen = Zencoder(api_version='edge')
 ```
+
+## Additional settings
+In adition Zencoder class consructor takes these arguments:
+* `proxies` - (optional) Dictionary mapping protocol to the URL of the proxy.
+* `cert` - (optional) if String, path to ssl client cert file (.pem). If Tuple, (‘cert’, ‘key’) pair.
+* `http_timeout` -  (optional) Float describing the timeout of the request
+
 ## Documentation
 Docs are in progress, and hosted at Read the Docs: http://zencoder.rtfd.org
 
