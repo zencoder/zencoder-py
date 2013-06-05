@@ -4,7 +4,7 @@
 A Python module for the [Zencoder](http://zencoder.com) API.
 
 ## Installation
-Install from PyPI using `easy_install` or `pip`.
+Install from PyPI using `pip`.
 
     pip install zencoder
 
@@ -13,8 +13,12 @@ Install from PyPI using `easy_install` or `pip`.
 
 ## Usage
 
+### Create an instance of `Zencoder`
+
     from zencoder import Zencoder
     zen = Zencoder('abc123') # enter your api key
+
+### Submit a job
 
     # creates an encoding job with the defaults
     job = zen.job.create('http://input-file/movie.avi')
@@ -22,10 +26,13 @@ Install from PyPI using `easy_install` or `pip`.
     print job.body
     print job.body['id']
 
+### Return output progress
+
     # get the transcode progress of the first output
     progress = zen.output.progress(job.body['outputs'][0]['id'])
     print progress.body
 
+### Create a new job with multiple outputs
 
     # configure your outputs with dictionaries
     iphone = {
@@ -39,11 +46,20 @@ Install from PyPI using `easy_install` or `pip`.
               'url': 's3://output-bucket/output-file.vp8',
               'video_codec':, 'vp8'
           }
+
     # the outputs kwarg requires an iterable
     outputs = (iphone, web)
     another_job = zen.job.create(input_url, outputs=outputs)
 
-**Note:** If you set the `ZENCODER_API_KEY` environment variable to your api key, you don't have to provide it when initializing Zencoder.
+### ZENCODER_API_KEY Environment Variable
+
+```python
+import os
+os.environ['ZENCODER_API_KEY'] = 'abcd1234'
+zen = Zencoder()
+```
+
+If you set `ZENCODER_API_KEY` to your API Key, you don't have to provide it when initializing Zencoder.
 
 ## Specifying the API Version
 Set the version of the Zencoder API you want to use as the `api_version` keyword to the `Zencoder` object (defaults to `v2`):
