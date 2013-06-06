@@ -28,8 +28,6 @@ Create an instance of the Zencoder client. This will accept an API key and versi
 
 ## [Jobs](https://app.zencoder.com/docs/api/jobs)
 
-There's more you can do on jobs than anything else in the API. The following methods are available: `list`, `create`, `details`, `progress`, `resubmit`, `cancel`, `delete`.
-
 Create a [new job](https://app.zencoder.com/docs/api/jobs/create).
 
 ```python
@@ -85,15 +83,6 @@ zen.job.resubmit(1)
 The number passed to `cancel` is the ID of a Zencoder job.
 
 ```python
-zen.job.cancel(1)
-```
-
-### delete
-
-The number passed to `delete` is the ID of a Zencoder job.
-
-```python
-zen.job.delete(1)
 ```
 
 ## [Inputs](https://app.zencoder.com/docs/api/inputs)
