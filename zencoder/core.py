@@ -39,6 +39,7 @@ class HTTPBackend(object):
                  test=False,
                  version=None,
                  proxies=None,
+                 cert=None,
                  verify=True):
 
         self.base_url = base_url
@@ -53,6 +54,7 @@ class HTTPBackend(object):
         self.requests_params = {
             'timeout': timeout,
             'proxies': proxies,
+            'cert': cert,
             'verify': verify
         }
 
@@ -159,6 +161,7 @@ class Zencoder(object):
                  timeout=None,
                  test=False,
                  proxies=None,
+                 cert=None,
                  verify=True):
         if not api_version:
             api_version = 'v2'
@@ -183,6 +186,7 @@ class Zencoder(object):
                       test=self.test,
                       version=api_version,
                       proxies=proxies,
+                      cert=cert,
                       verify=verify)
 
         self.job = Job(*args, **kwargs)

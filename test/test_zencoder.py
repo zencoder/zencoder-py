@@ -55,6 +55,13 @@ class TestZencoder(unittest.TestCase):
 
         self.assertEquals(zc.job.requests_params['verify'], False)
 
+    def test_set_cert_path(self):
+        api_key = 'testapikey'
+        cert = '/path/to/cert.pem'
+        zc = Zencoder(api_key=api_key, cert=cert)
+
+        self.assertEquals(zc.job.requests_params['cert'], cert)
+
 if __name__ == "__main__":
     unittest.main()
 
