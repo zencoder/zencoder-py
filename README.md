@@ -20,11 +20,13 @@ from zencoder import Zencoder
 
 Create an instance of the Zencoder client. This will accept an API key and version. If not API key is set, it will look for a `ZENCODER_API_KEY` environment variable. API version defaults to 'v2'.
 
-    # If you want to specify an API key when creating a client
-    client = Zencoder('API_KEY')
+```python
+# If you want to specify an API key when creating a client
+client = Zencoder('API_KEY')
 
-    # If you have the environment variable set
-    client = Zencoder()
+# If you have the environment variable set
+client = Zencoder()
+```
 
 ## [Jobs](https://app.zencoder.com/docs/api/jobs)
 
