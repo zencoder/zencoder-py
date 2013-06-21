@@ -195,12 +195,6 @@ Turn off integration mode, which means your account is live (and you'll be bille
 client.account.live()
 ```
 
-## Additional settings
-In adition Zencoder class consructor takes these arguments:
-* `proxies` - (optional) Dictionary mapping protocol to the URL of the proxy.
-* `cert` - (optional) if String, path to ssl client cert file (.pem). If Tuple, (‘cert’, ‘key’) pair.
-* `http_timeout` -  (optional) Float describing the timeout of the request
-
 ## Tests
 
 The tests use the `mock` library to stub in response data from the API. Run tests individually:
