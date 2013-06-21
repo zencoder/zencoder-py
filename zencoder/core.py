@@ -39,8 +39,7 @@ class HTTPBackend(object):
                  test=False,
                  version=None,
                  proxies=None,
-                 cert=None,
-                 http_timeout=None):
+                 verify=True):
 
         self.base_url = base_url
 
@@ -49,10 +48,13 @@ class HTTPBackend(object):
 
         self.http = requests.Session()
 
-        # set requests additional settings. `None` is default for all of these settings
-        self.http.timeout = http_timeout
-        self.http.proxies = proxies
-        self.http.cert = cert
+        # set requests additional settings.
+        # `None` is default for all of these settings.
+        self.requests_params = {
+            'timeout': timeout,
+            'proxies': proxies,
+            'verify': verify
+        }
 
         self.api_key = api_key
         self.test = test
@@ -80,7 +82,9 @@ class HTTPBackend(object):
 
             ``params`` should be a dictionary
         """
-        response = self.http.delete(url, params=params)
+        response = self.http.delete(url,
+                                    params=params,
+                                    **self.requests_params)
         return self.process(response)
 
     def get(self, url, data=None):
@@ -88,18 +92,28 @@ class HTTPBackend(object):
 
             ``data`` should be a dictionary of url parameters
         """
-        response = self.http.get(url, headers=self.headers, params=data)
+        response = self.http.get(url,
+                                 headers=self.headers,
+                                 params=data,
+                                 **self.requests_params)
         return self.process(response)
 
     def post(self, url, body=None):
         """ Executes an HTTP POST request for the given URL. """
-        response = self.http.post(url, data=body, headers=self.headers)
+        response = self.http.post(url,
+                                  headers=self.headers,
+                                  data=body,
+                                  **self.requests_params)
 
         return self.process(response)
 
     def put(self, url, data=None, body=None):
         """ Executes an HTTP PUT request for the given URL. """
-        response = self.http.put(url, params=data, data=body, headers=self.headers)
+        response = self.http.put(url,
+                                 headers=self.headers,
+                                 data=body,
+                                 params=data,
+                                 **self.requests_params)
 
         return self.process(response)
 
@@ -135,8 +149,17 @@ class Zencoder(object):
 
     Set ``api_version='edge'`` to get the Zencoder development API.
     (defaults to 'v2')
+
+    ``timeout``, ``proxies`` and ``verify`` can be set to control the
+    underlying HTTP requests that are made.
     """
-    def __init__(self, api_key=None, api_version=None, timeout=None, test=False):
+    def __init__(self,
+                 api_key=None,
+                 api_version=None,
+                 timeout=None,
+                 test=False,
+                 proxies=None,
+                 verify=True):
         if not api_version:
             api_version = 'v2'
 
@@ -155,7 +178,13 @@ class Zencoder(object):
         self.test = test
 
         args = (self.base_url, self.api_key)
-        kwargs = dict(timeout=timeout, test=self.test, version=api_version)
+
+        kwargs = dict(timeout=timeout,
+                      test=self.test,
+                      version=api_version,
+                      proxies=proxies,
+                      verify=verify)
+
         self.job = Job(*args, **kwargs)
         self.account = Account(*args, **kwargs)
         self.output = Output(*args, **kwargs)
