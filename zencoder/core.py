@@ -158,17 +158,26 @@ class Zencoder(object):
     def __init__(self,
                  api_key=None,
                  api_version=None,
+                 base_url=None,
                  timeout=None,
                  test=False,
                  proxies=None,
                  cert=None,
                  verify=True):
-        if not api_version:
-            api_version = 'v2'
 
-        self.base_url = 'https://app.zencoder.com/api/'
-        if not api_version == 'edge':
-            self.base_url = self.base_url + '%s/' % api_version
+        if base_url and api_version:
+            raise ZencoderError('Cannot set both `base_url` and `api_version`.')
+
+        if base_url:
+            self.base_url = base_url
+        else:
+            self.base_url = 'https://app.zencoder.com/api/'
+
+            if not api_version:
+                api_version = 'v2'
+
+            if api_version != 'edge':
+                self.base_url = '{0}{1}/'.format(self.base_url, api_version)
 
         if not api_key:
             try:
