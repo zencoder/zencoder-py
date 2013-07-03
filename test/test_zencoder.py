@@ -42,8 +42,11 @@ class TestZencoder(unittest.TestCase):
 
     def test_set_base_url_and_version_fails(self):
         os.environ['ZENCODER_API_KEY'] = 'abcd123'
-        with self.assertRaises(zencoder.core.ZencoderError):
-            zc = Zencoder(base_url='https://localhost:800/foo/', api_version='v3')
+
+        self.assertRaises(zencoder.core.ZencoderError,
+                          Zencoder,
+                          base_url='https://localhost:800/foo/',
+                          api_version='v3')
 
     def test_set_timeout(self):
         api_key = 'testapikey'
