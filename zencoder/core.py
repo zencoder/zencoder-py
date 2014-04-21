@@ -326,7 +326,8 @@ class Job(HTTPBackend):
         kwargs['resource_name'] = 'jobs'
         super(Job, self).__init__(*args, **kwargs)
 
-    def create(self, input=None, live_stream=False, outputs=None, options=None):
+    def create(self, input=None, live_stream=False, outputs=None, options=None,
+               grouping=None):
         """ Creates a transcoding job. Here are some examples::
 
             job.create('s3://zencodertesting/test.mov')
@@ -346,6 +347,9 @@ class Job(HTTPBackend):
 
         if live_stream:
             data['live_stream'] = live_stream
+
+        if grouping:
+            data['grouping'] = grouping
 
         return self.post(self.base_url, body=json.dumps(data))
 
