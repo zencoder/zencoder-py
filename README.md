@@ -176,6 +176,7 @@ No API Key is required.
 client.account.create('foo@example.com', tos=1)
 client.account.create('foo@example.com', tos=1,
                    options={'password': 'abcd1234',
+                            'password_confirmation': 'abcd1234',
                             'affiliate_code': 'foo'})
 ```
 
