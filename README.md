@@ -28,6 +28,10 @@ client = Zencoder('API_KEY')
 client = Zencoder()
 ```
 
+#### Configuring the JSON Module
+
+By default, zencoder-py uses the built-in `json` module, but you can optionally configure it to use `simplejson` by setting the `ZENCODER_PY_JSON_MODULE` environment variable to `simplejson`. Note that zencoder-py will not install either module, it must already be installed.
+
 ## [Jobs](https://app.zencoder.com/docs/api/jobs)
 
 Create a [new job](https://app.zencoder.com/docs/api/jobs/create).
