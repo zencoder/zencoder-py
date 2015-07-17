@@ -2,7 +2,7 @@
 Zencoder
 --------
 
-[![Build Status](https://travis-ci.org/zencoder/zencoder-py.png?branch=master)](https://travis-ci.org/zencoder/zencoder-py)
+[![Build Status](https://travis-ci.org/zencoder/zencoder-py.svg?branch=master)](https://travis-ci.org/zencoder/zencoder-py)
 
 A Python module for interacting with the [Zencoder](http://zencoder.com) API.
 
