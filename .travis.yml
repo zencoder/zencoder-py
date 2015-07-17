@@ -8,6 +8,7 @@ python:
 env:
   matrix:
     - ZENCODER_PY_JSON_MODULE=simplejson
+    - ZENCODER_PY_JSON_MODULE=json
 
 install:
   - pip install simplejson
