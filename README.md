@@ -92,7 +92,7 @@ client.job.cancel(1)
 
 Get [details](https://app.zencoder.com/docs/api/inputs/show) about an input.
 
-The number passed to `details` is the ID of a Zencoder job.
+The number passed to `details` is the ID of a Zencoder input.
 
 ```python
 client.input.details(1)
@@ -100,7 +100,7 @@ client.input.details(1)
 
 Get [progress](https://app.zencoder.com/docs/api/inputs/progress) for an input.
 
-The number passed to `progress` is the ID of a Zencoder job.
+The number passed to `progress` is the ID of a Zencoder input.
 
 ```python
 client.input.progress(1)
@@ -109,7 +109,7 @@ client.input.progress(1)
 
 Get [details](https://app.zencoder.com/docs/api/outputs/show) about an output.
 
-The number passed to `details` is the ID of a Zencoder job.
+The number passed to `details` is the ID of a Zencoder output.
 
 ```python
 client.output.details(1)
@@ -117,7 +117,7 @@ client.output.details(1)
 
 Get [progress](https://app.zencoder.com/docs/api/outputs/progress) for an output.
 
-The number passed to `progress` is the ID of a Zencoder job.
+The number passed to `progress` is the ID of a Zencoder output.
 
 ```python
 client.output.progress(1)
