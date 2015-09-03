@@ -5,7 +5,14 @@ python:
   - "3.3"
   - "3.4"
   - "pypy"
-install: pip install -e .
+env:
+  matrix:
+    - ZENCODER_PY_JSON_MODULE=simplejson
+    - ZENCODER_PY_JSON_MODULE=json
+
+install:
+  - pip install simplejson
+  - pip install -e .
 # command to run tests
 script: nosetests
 

@@ -2,21 +2,13 @@ import os
 import requests
 from datetime import datetime
 
-# Note: I've seen this pattern for dealing with json in different versions of
-# python in a lot of modules -- if there's a better way, I'd love to use it.
-try:
-    # python 2.6 and greater
-    import json
-except ImportError:
-    try:
-        # python 2.5
-        import simplejson
-        json = simplejson
-    except ImportError:
-        # if we're in django or Google AppEngine land
-        # use this as a last resort
-        from django.utils import simplejson
-        json = simplejson
+json_module = os.environ.get('ZENCODER_PY_JSON_MODULE', 'json')
+valid_json_modules = ('json', 'simplejson')
+if json_module not in valid_json_modules:
+    msg = 'ZENCODER_PY_JSON_MODULE=%s is not supported. Supported JSON modules: %s' % (json_module, ', '.join(valid_json_modules))
+    raise RuntimeError(msg)
+
+json = __import__(json_module)
 
 __version__ = '0.6.5'
 
